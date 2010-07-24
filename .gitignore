@@ -1,5 +1,3 @@
 .buildpath
 .project
 .settings
-public/.htaccess
-lib/conf.php

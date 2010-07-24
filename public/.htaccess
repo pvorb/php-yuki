@@ -1,0 +1,40 @@
+#### For detail information on mod_rewrite see http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html ####
+
+RewriteEngine	On
+RewriteBase	/
+
+### HTML/PHP files ###
+
+## Check for *.*.html (Comment these lines out if you use single languages.)
+RewriteCond	%{REQUEST_FILENAME}	-f
+RewriteCond	%{REQUEST_URI}		^(.*)\.(.*)\.html$	[OR]
+RewriteCond	%{REQUEST_URI}		^(.*)\.(.*)\.php$
+## Replace with */?lang=*
+RewriteRule	.			%1/\?\l\a\n\g\=%2	[L,R=301]
+
+## Check for *.html
+RewriteCond	%{REQUEST_FILENAME}	-f
+RewriteCond	%{REQUEST_URI}		^(.*)\.html$
+RewriteRule	.			%1/			[L,R=301]
+#[OR]
+#RewriteCond	%{REQUEST_URI}		^(.*)\.php$
+## Replace with */
+#RewriteRule	.			%1/			[L,R=301]
+
+## Remove multiple trailing slashes
+RewriteCond	%{REQUEST_FILENAME}	!-f
+RewriteCond	%{REQUEST_URI}		^(.*)//(.*)$
+RewriteRule	.			%1/			[L,R=301]
+
+## Add a trailing slash, if none exists
+RewriteCond	%{REQUEST_FILENAME}	!-f
+RewriteCond	%{REQUEST_URI}		!(.*)/$
+RewriteRule	^(.*)$			$1/			[L,R=301]
+
+## Everything that didn't mach any rule before and is not a file in the filesystem will be mapped to index.php
+RewriteCond	%{REQUEST_FILENAME}	!-f
+RewriteRule	^(.*)$			/index.php?q=$1		[L,QSA,NC]
+
+## Default character set
+AddDefaultCharset	utf-8
+
