@@ -17,9 +17,13 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.1
+ * @version 0.1.2
  * @package org.genitis.yuki
  */
+
+// Define important directories.
+define('DIR_LIB', dirname(__FILE__));
+define('DIR_MOD', DIR_LIB.DIRECTORY_SEPARATOR.'mod');
 
 define('ERROR_PAGE_404', 'error/404/');
 define('USES_MULTIPLE_LANGUAGES', FALSE);
