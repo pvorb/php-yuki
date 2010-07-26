@@ -1,0 +1,20 @@
+<h2>Comments</h2>
+<div class="comment">
+	<div class="content">
+		<p>Hey, great website!</p>
+	</div>
+	<div class="meta">
+		Comment by <a href="http://www.genitis.org/">Paul</a> on Jul 26, 2010 at
+		1:45 pm.
+	</div>
+</div>
+<div class="comment">
+	<div class="content">
+		<p>This was easy, huh?</p>
+	</div>
+	<div class="meta">
+		Comment by <a href="http://www.genitis.org/">Paul</a> on Jul 26, 2010 at
+		1:49 pm.
+	</div>
+</div>
+	
