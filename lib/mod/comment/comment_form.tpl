@@ -1,6 +1,6 @@
 <!-- example comment form -->
 <form action="" method="post">
-	<h2>Leave a comment</h2>
+	<h3>Leave a comment</h3>
 	<label for="comment-form-message">Message</label><br />
 	<textarea name="message" rows="10" cols="30" id="comment-form-message"></textarea><br />
 	<input name="name" type="text" size="15" id="comment-form-name" />

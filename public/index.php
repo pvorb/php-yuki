@@ -4,12 +4,14 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.2
  * @package org.genitis.yuki
  */
 
 // Requires conf.php
 require_once '../lib/conf.php';
+// Define
+define('DIR_PUB', dirname(__FILE__));
 
 // Set $_GET['q'] as $path, default is ''.
 $path = '';
@@ -61,9 +63,11 @@ for ($i = 0; $i < sizeof($file_ext); $i++) {
 
 	// Include content
 	if (file_exists($content_path)) {
+		$is_index = FALSE;
 		include $content_path;
 		exit;
 	} elseif (file_exists($index_path)) {
+		$is_index = TRUE;
 		include $index_path;
 		exit;
 	}
@@ -76,3 +80,4 @@ if (isset($redirections[$path]))
 
 // Redirect to a 404 error, no content file has been found
 redirect(404, ERROR_PAGE_404, $path);
+
