@@ -1,6 +1,6 @@
 <?php
 /**
- * Configuration file
+ * Configuration file.
  *
  * The following definitions are possible:
  * ERROR_PAGE_404               path to the 404 error page
@@ -8,10 +8,12 @@
  *                              multiple languages. (for example 'index.en.html'
  *                              and 'index.de.html'
  * DEFAULT_LANG                 any language string (for example 'en')
- * 
+ *
  * The following variables are possible:
  * $file_ext                    array of strings with all file extensions that
  *                              will be looked up
+ * $modules                     array of strings with all file names that shall
+ *                              be included relative to the 'lib/mod' folder.
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
@@ -26,4 +28,8 @@ define('DEFAULT_LANG', 'de');
 $file_ext = array(
 	'.html',
 	'.php'
+);
+
+$modules = array(
+	'comment/comment_form.php'
 );
