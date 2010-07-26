@@ -7,5 +7,5 @@
 	<label for="comment-form-name">Name</label><br />
 	<input name="website" type="text" size="15" id="comment-form-website" />
 	<label for="comment-form-website">Website</label><br />
-	<input name="add-comment" type="submit" />
+	<input name="comment-new" type="submit" value="Comment" /> <input name="comment-preview" type="submit" value="Preview" />
 </form>
