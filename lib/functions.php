@@ -31,9 +31,11 @@ function redirect($type, $location, $search = FALSE) {
 }
 
 /**
- * Loads the modules that are specified in the $modules var in 'lib/conf.php'.
+ * Loads the modules in the given array.
+ *
+ * @param &array array of strings with path strings relative to 'lib/mod/'.
  */
-function load_modules() {
+function load_modules(&$modules) {
 	foreach ($modules as $mod) {
 		require_once 'mod/'.$mod;
 	}

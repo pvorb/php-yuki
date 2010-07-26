@@ -49,7 +49,7 @@ if (USES_MULTIPLE_LANGUAGES) {
 }
 
 // Load all modules.
-load_modules();
+load_modules($modules);
 
 // Try to include the file with different file endings with the order that was
 // specified in lib/conf.php in variable $file_ext.
