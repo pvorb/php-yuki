@@ -4,7 +4,7 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.2.0
  * @package org.genitis.yuki
  */
 
@@ -28,6 +28,15 @@ function redirect($type, $location, $search = FALSE) {
 	}
 	header('Location: /'.$location.($search != FALSE ? '?s='.trim(strtr($search, array('/' => '+', '%20' => '+')), '+') : ''));
 	exit;
+}
+
+/**
+ * Loads the modules that are specified in the $modules var in 'lib/conf.php'.
+ */
+function load_modules() {
+	foreach ($modules as $mod) {
+		require_once 'mod/'.$mod;
+	}
 }
 
 ///**
