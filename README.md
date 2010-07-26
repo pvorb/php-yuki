@@ -11,3 +11,6 @@ All you need is an *Apache HTTP Server* with a *PHP* installation and the Apache
 
 Now you are able to add your HTML files and whatever you like.
 
+## Example site
+There's a tiny example project available if you checkout `example-site`. Just have a look.
+
