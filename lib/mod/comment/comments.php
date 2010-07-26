@@ -12,6 +12,9 @@
  * @package org.genitis.yuki.mod.comment
  */
 
+/**
+ * Inserts the comment form.
+ */
 function comment_form() {
 	include 'comment_form.tpl';
 }

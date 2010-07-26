@@ -17,7 +17,7 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.1
  * @package org.genitis.yuki
  */
 
@@ -31,5 +31,5 @@ $file_ext = array(
 );
 
 $modules = array(
-	'comment/comment_form.php'
+	'comment/comments.php'
 );
