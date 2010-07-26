@@ -20,6 +20,11 @@
  *   Simply type <?php comment_form(); ?> wherever you need it.
  */
 function comment_form() {
+	if (isset($_POST['comment-preview'])) {
+		include 'comment_preview.tpl';
+	} else if (isset($_POST['comment-new'])) {
+		include 'comment_new.tpl';
+	}
 	include 'comment_form.tpl';
 }
 
