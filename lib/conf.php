@@ -27,7 +27,10 @@ define('DIR_MOD', DIR_LIB.DIRECTORY_SEPARATOR.'mod');
 
 define('ERROR_PAGE_404', 'error/404/');
 define('USES_MULTIPLE_LANGUAGES', FALSE);
-define('DEFAULT_LANG', 'de');
+define('DEFAULT_LANG', 'en');
+
+define('DATE_FORMAT', 'M d, Y');
+define('TIME_FORMAT', 'g:m a');
 
 $file_ext = array(
 	'.html',

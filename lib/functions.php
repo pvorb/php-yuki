@@ -33,7 +33,7 @@ function redirect($type, $location, $search = FALSE) {
 /**
  * Loads the modules in the given array.
  *
- * @param &array array of strings with path strings relative to 'lib/mod/'.
+ * @param array $array array of strings with path strings relative to 'lib/mod/'.
  */
 function load_modules(&$modules) {
 	foreach ($modules as $mod) {
@@ -41,34 +41,66 @@ function load_modules(&$modules) {
 	}
 }
 
-///**
-// * This class enables you to get real uuids using the OSSP library.
-// * Note you need php-uuid installed.
-// *
-// * @author Marius Karthaus, Paul Vorbach
-// */
-//class uuid {
-//
-//	protected $uuidobject;
-//
-//	/**
-//	 * On long running deamons i've seen a lost resource. This checks the resource and creates it if needed.
-//	 */
-//	protected function create() {
-//		if (!is_resource($this->uuidobject)) {
-//			uuid_create(&$this->uuidobject);
-//		}
-//	}
-//
-//	/**
-//	 * Return a type 5 (SHA-1 hash) uuid
-//	 *
-//	 * @return string
-//	 */
-//	public function uuid_v5() {
-//		$this->create();
-//		uuid_make($this->uuidobject, UUID_MAKE_V5);
-//		uuid_export($this->uuidobject, UUID_FMT_STR, &$uuidstring);
-//		return trim($uuidstring);
-//	}
-//}
+/**
+ * Sanitizes the HTML contents of a user entry.
+ * @param string $html
+ * @return string
+ */
+function sanitize_user_html(&$html) {
+	if (!is_string($html))
+		$html = strval($html);
+
+	return $html;
+}
+
+/**
+ * Sanitizes a string so that it only accepts alpha-numeric characters.
+ * @param string $string
+ * @return string
+ */
+function sanitize_alphanum(&$string) {
+	if (!is_string($string))
+		$string = strval($string);
+
+	return $string;
+}
+
+/**
+ * Sanitizes a string so that it only accepts url characters.
+ * @param string $url
+ * @return string
+ */
+function sanitize_url(&$url) {
+	if (!is_string($url))
+		$url = strval($url);
+
+	return $url;
+}
+
+/**
+ * Sanitizes a string so that it only accepts email characters.
+ * @param string $email
+ * @return string
+ */
+function sanitize_email(&$email) {
+	if (!is_string($email))
+		$email = strval($email);
+
+	return $email;
+}
+
+/**
+ * Returns the current date as defined in DATE_FORMAT.
+ * @return string
+ */
+function current_date() {
+	return date(DATE_FORMAT);
+}
+
+/**
+ * Return the current time as defined in TIME_FORMAT.
+ * @return string
+ */
+function current_time() {
+	return date(TIME_FORMAT);
+}
