@@ -8,6 +8,8 @@
  * @package org.genitis.yuki
  */
 
+include dirname(__FILE__).'/../functions.php';
+
 $html = <<<EOT
 This is a small comment.
 
@@ -20,4 +22,11 @@ and some nice line breaks, too.
 and many other funny things.
 EOT;
 
-echo sanitize_html($html);
+echo sanitize_user_html($html);
+
+
+$html = <<<EOT
+<?php echo $sth; ?>
+EOT;
+
+echo sanitize_user_html($html);
