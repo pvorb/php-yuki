@@ -64,15 +64,14 @@ $san_disallowed_html_elements = array(
 	'xml', 'xss'
 );
 
-require_once './mod/markdown/markdown.php';
-
 /**
  * Sanitizes the HTML contents of a user entry.
  * @param string $html
  * @return string
  */
 function sanitize_user_html(&$html) {
-	return Markdown($html);
+	if(preg_match('$^(\d{0,3}\.){4}$i', '124.94.0.1'));
+		;
 }
 
 /**
