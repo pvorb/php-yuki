@@ -4,7 +4,7 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.2.0
+ * @version 0.3.0
  * @package org.genitis.yuki
  */
 
@@ -56,13 +56,8 @@ $san_regex_replacement = array(
 	'Redirect\s+302'            => '[removed]'
 );
 
-$san_disallowed_html_elements = array(
-	'alert', 'applet', 'audio', 'basefont', 'base', 'behavior', 'bgsound',
-	'blink', 'body', 'embed', 'expression', 'form', 'frameset', 'frame', 'head',
-	'html', 'ilayer', 'iframe', 'input', 'isindex', 'layer', 'link', 'meta',
-	'object', 'plaintext', 'style', 'script', 'textarea', 'title', 'video',
-	'xml', 'xss'
-);
+define('PREG_EMAIL', '#^(mailto:)?[._-[:alphanum:]]+@([[:alphanum:]]+\.)*[[:alphanum:]]\.[[:alphanum:]]+$#i');
+define('PREG_URL', '');
 
 /**
  * Sanitizes the HTML contents of a user entry.
@@ -70,8 +65,6 @@ $san_disallowed_html_elements = array(
  * @return string
  */
 function sanitize_user_html(&$html) {
-	if(preg_match('$^(\d{0,3}\.){4}$i', '124.94.0.1'));
-		;
 }
 
 /**
@@ -95,7 +88,16 @@ function sanitize_url(&$url) {
 	if (!is_string($url))
 		$url = strval($url);
 
-	return $url;
+	// if there’s no protocol given
+	if (!match_protocol($url)) {
+		// if it’s an email adress
+		if (strpos($url, '@'))
+			$url = sanitize_email($url);
+		else
+			$url = 'http://'.$url;
+	}
+
+	return htmlspecialchars($url);
 }
 
 /**
@@ -107,7 +109,23 @@ function sanitize_email(&$email) {
 	if (!is_string($email))
 		$email = strval($email);
 
-	return $email;
+	if (stripos($email, 'mailto:') !== 0)
+		$email = 'mailto:'.$email;
+
+	return htmlspecialchars($email);
+}
+
+function match_protocol(&$protocol) {
+	return preg_match('#^([[:alpha:]]+://|mailto:)#i', $protocol) ? TRUE : FALSE;
+}
+
+/**
+ * Matches strings that contain an IP adress.
+ * @param $ip IP adress string
+ * @return TRUE or FALSE
+ */
+function match_ip(&$ip) {
+	return preg_match('#(\d{0,3}\.){3}\d{0,3}#i', $ip) ? TRUE : FALSE;
 }
 
 /**
