@@ -4,12 +4,14 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.2
  * @package org.genitis.yuki
  */
 
 // Requires conf.php
 require_once '../lib/conf.php';
+// Define public dir
+define('DIR_PUB', dirname(__FILE__));
 
 // Set $_GET['q'] as $path, default is ''.
 $path = '';
@@ -18,13 +20,15 @@ if (isset($_GET['q'])) {
 	unset($_GET['q']);
 }
 
+// Requires functions.php
+require_once '../lib/functions.php';
+
 // Set $content and $index
 if ($path == '') {
 	$content = '.'; // does never exist
 	$index = 'index';
 } elseif (strrpos($path, 'index/') === 0) {
 	// Redirect to a 404 error, no content file has been found
-	require_once '../lib/functions.php';
 	redirect(404, ERROR_PAGE_404, $path);
 } else {
 	$index = $path.'index';
@@ -33,7 +37,7 @@ if ($path == '') {
 
 if (USES_MULTIPLE_LANGUAGES) {
 	// Set a language
-	$lang = 'en';
+	$lang = 'de';
 	if (isset($_GET['lang'])) {
 		$lang = $_GET['lang'];
 		unset($_GET['lang']);
@@ -43,9 +47,11 @@ if (USES_MULTIPLE_LANGUAGES) {
 	$content .= '.'.$lang;
 	$index .= '.'.$lang;
 } elseif (isset($_GET['lang'])) {
-	require_once '../lib/functions.php';
 	redirect(301, $path);
 }
+
+// Load all modules.
+load_modules($modules);
 
 // Try to include the file with different file endings with the order that was
 // specified in lib/conf.php in variable $file_ext.
@@ -57,17 +63,11 @@ for ($i = 0; $i < sizeof($file_ext); $i++) {
 
 	// Include content
 	if (file_exists($content_path)) {
-		// Require functions
-		if ($file_ext[$i] == '.php')
-			require_once '../lib/functions.php';
-
+		$is_index = FALSE;
 		include $content_path;
 		exit;
 	} elseif (file_exists($index_path)) {
-		// Require functions
-		if ($file_ext[$i] == '.php')
-			require_once '../lib/functions.php';
-
+		$is_index = TRUE;
 		include $index_path;
 		exit;
 	}
@@ -75,7 +75,6 @@ for ($i = 0; $i < sizeof($file_ext); $i++) {
 
 // Redirections
 include '../lib/redirections.php';
-require_once '../lib/functions.php';
 if (isset($redirections[$path]))
 	redirect(301, $redirections[$path]);
 
