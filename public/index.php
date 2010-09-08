@@ -37,7 +37,7 @@ if ($path == '') {
 
 if (USES_MULTIPLE_LANGUAGES) {
 	// Set a language
-	$lang = 'de';
+	$lang = 'en';
 	if (isset($_GET['lang'])) {
 		$lang = $_GET['lang'];
 		unset($_GET['lang']);
