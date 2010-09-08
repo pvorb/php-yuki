@@ -1,15 +1,15 @@
 <?php
 /**
- * Test for function sanitize_email().
+ * Tests for function sanitize_html().
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
- * @package org.genitis.yuki
+ * @version 0.2.0
+ * @package org.genitis.yuki.mod.user-input.test
  */
-
-include dirname(__FILE__).'/../functions.php';
-
+?>
+<h1>Tests for <code>function sanitize_html()</code></h1>
+<?php
 $html = <<<EOT
 This is a small comment.
 
@@ -25,8 +25,6 @@ EOT;
 echo sanitize_user_html($html);
 
 
-$html = <<<EOT
-<?php echo $sth; ?>
-EOT;
+$html = '<?php echo $sth; ?>';
 
 echo sanitize_user_html($html);
