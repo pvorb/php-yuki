@@ -29,15 +29,6 @@ define('PREG_EMAIL', '#^(mailto:)?[._-[:alnum:]]+@([[:alnum:]]+\.)*[[:alnum:]]+\
 //define('PREG_URL', '');
 
 /**
- * Matches strings that contain an IP adress.
- * @param string $ip IP adress string
- * @return boolean
- */
-function validate_ip(&$ip) {
-	return preg_match('#(\d{0,3}\.){3}\d{0,3}#i', $ip) ? TRUE : FALSE;
-}
-
-/**
  * Matches strings that begin with a protocol.
  * @param string $protocol
  * @return boolean
