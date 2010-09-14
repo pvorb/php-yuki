@@ -75,12 +75,13 @@ function sanitize_url(&$url) {
 // -----------------------------------------------------------------------------
 // Under Construction:
 
-function handle_inline(&$i) {
+function sanitize_inline($i) {
 	// Replace multible <br /> tags with a single one.
-	$i = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $i);
+	$result = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $i);
+	return $result;
 }
 
-function handle_paragraph(&$p) {
+function sanitize_paragraph(&$p) {
 	if (!preg_match('#^<p[[:alnum:]="\']*>$#i', $p)
 			&& !strripos($p, '</p>')) // If it is not surrounded by <p>
 		$p = '<p>'.$p.'</p>'; // Add <p> tags.
@@ -95,13 +96,39 @@ function switch_state(&$state) {
 
 function handle_state(&$p, &$state) {
 	$elements = preg_split('#<(/)?code>#i', $p);
+	$num_elems = sizeof($elements);
+	var_dump($elements);
 
-	if ((sizeof($elements) % 2) == 0) { // even number
-
-	} else { // odd
+	if ($num_elems == 1) {
+		sanitize_paragraph($p);
+	} elseif ($num_elems % 2) { // odd number of elements
+		$p = '';
+		if ($state == ST_NORMAL) { // If normal state
+			if ($num_elems == 3 && $elements[0] == '' && $elements [2] == '') {
+				$p = '<pre><code>'.htmlspecialchars($elements[1]).'</code></pre>';
+			} else {
+				foreach ($elements as $key => &$element) { // for every element
+					if ($key == 0) {
+						$p .= '<p>'.sanitize_inline($value);
+					} elseif ($key == $num_elems - 1) {
+						$p .= sanitize_inline($value).'</p>';
+					} elseif ($key % 2) {
+						$p .= sanitize_inline($value);
+					} else {
+						$p .= '<code>'.htmlspecialchars($value).'</code>';
+					}
+				}
+			}
+		} else {
+		}
+	} else { // even number of elements in this line
 		switch_state($state);
+
+		if ($state == ST_NORMAL)
+			;
+		else
+			;
 	}
-	var_dump(sizeof($elements));
 }
 
 /**
