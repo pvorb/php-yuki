@@ -71,21 +71,6 @@ function sanitize_alphanum(&$string) {
 }
 
 /**
- * Sanitizes a string to an email adress.
- * @param string $email
- * @return string
- */
-function sanitize_email(&$email) {
-	if (!is_string($email))
-		$email = strval($email);
-
-	if (stripos($email, 'mailto:') !== 0)
-		$email = 'mailto:'.$email;
-
-	return htmlspecialchars($email);
-}
-
-/**
  * Sanitizes a string to a (valid) URL.
  * @param string $url
  * @return string

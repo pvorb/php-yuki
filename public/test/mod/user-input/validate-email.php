@@ -1,6 +1,6 @@
 <?php
 /**
- * Test for function sanitize_email().
+ * Test for function validate_email().
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
@@ -8,7 +8,7 @@
  * @package org.genitis.yuki.mod.user-input.test
  */
 ?>
-<h1>Tests for function <code>sanitize_email().</code></h1>
+<h1>Tests for function <code>validate_email().</code></h1>
 <?php
 $emails = array(
 	'name@domain.com',
