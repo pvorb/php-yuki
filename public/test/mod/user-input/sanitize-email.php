@@ -12,6 +12,6 @@
 <?php
 $emails = array('name@domain.com', 'c__j@domain.tld', 'näme@heinz.org', 'a@bö.de');
 foreach ($emails as $email) {
-	echo sanitize_email($email) !== FALSE ? sanitize_email($email) : '<strong>error</strong>: '.$email;
+	echo validate_email($email) === FALSE ? '<strong>error</strong>: '.$email : sanitize_email($email);
 	echo "<br />\n";
 }

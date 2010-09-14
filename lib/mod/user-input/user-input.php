@@ -38,6 +38,15 @@ function validate_protocol(&$protocol) {
 }
 
 /**
+ * Matches strings that seem to be an email address.
+ * @param string $email
+ * @return boolean
+ */
+function validate_email(&$email) {
+	return preg_match(PREG_EMAIL, $email);
+}
+
+/**
  * Sanitizes the HTML contents of a user entry.
  * @param string $html
  * @return string
