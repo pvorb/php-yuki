@@ -52,22 +52,16 @@ function validate_email(&$email) {
  * @return string
  */
 function sanitize_user_html(&$html) {
-	if (!is_string($html))
-		$string = strval($html);
-
 	return $html;
 }
 
 /**
- * Sanitizes a string so that it only accepts alpha-numeric characters.
+ * Sanitizes a string so that html characters are replaced by their entities.
  * @param string $string
  * @return string
  */
-function sanitize_alphanum(&$string) {
-	if (!is_string($string))
-		$string = strval($string);
-
-	return htmlspecialchars($string);
+function sanitize_string(&$string) {
+	return htmlspecialchars($string, ENT_QUOTES);
 }
 
 /**
@@ -76,14 +70,11 @@ function sanitize_alphanum(&$string) {
  * @return string
  */
 function sanitize_url(&$url) {
-	if (!is_string($url))
-		$url = strval($url);
-
 	// if there’s no protocol given
 	if (!match_protocol($url)) {
 		// if it’s an email adress
 		if (strpos($url, '@'))
-			$url = sanitize_email($url);
+			$url = 'mailto://'.$url;
 		else
 			$url = 'http://'.$url;
 	}
