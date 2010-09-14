@@ -46,28 +46,6 @@ function validate_email($email) {
 }
 
 /**
- * Sanitizes the HTML contents of a user entry.
- * @param string $html
- * @return string
- */
-function sanitize_user_html(&$html) {
-	$br_tags = array('<br>', '<br/>');
-	$html = str_ireplace($br_tags, '<br />', $html); // Replace wrong <br> tags.
-
-	$paragraphs = explode("\n\n", $html); // Split $html into an array of paragraphs.
-		if (sizeof($paragraphs) > 1) {
-		foreach ($paragraphs as &$p) { // Do foreach paragraph:
-			if (!preg_match('#^<p[[:alnum:]="\']*>$#i', $p)
-					&& !strripos($p, '</p>')) // If it is not surrounded by <p>
-				$p = '<p>'.$p.'</p>'; // Add <p> tags.
-			$p = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $p);
-		}
-		$html = implode("\n", $paragraphs);
-	}
-	return $html;
-}
-
-/**
  * Sanitizes a string so that html characters are replaced by their entities.
  * @param string $string
  * @return string
@@ -93,3 +71,94 @@ function sanitize_url(&$url) {
 
 	return htmlspecialchars($url);
 }
+
+// -----------------------------------------------------------------------------
+// Under Construction:
+
+function handle_inline(&$i) {
+	// Replace multible <br /> tags with a single one.
+	$i = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $i);
+}
+
+function handle_paragraph(&$p) {
+	if (!preg_match('#^<p[[:alnum:]="\']*>$#i', $p)
+			&& !strripos($p, '</p>')) // If it is not surrounded by <p>
+		$p = '<p>'.$p.'</p>'; // Add <p> tags.
+}
+
+define('ST_NORMAL', 0);
+define('ST_CODE', 1);
+
+/**
+ * Sanitizes the HTML contents of a user entry.
+ * @param string $html
+ * @return string
+ */
+function sanitize_user_html(&$html) {
+	$state = ST_NORMAL;
+
+	$br_tags = array('<br>', '<br/>');
+	$html = str_ireplace($br_tags, '<br />', $html); // Replace wrong <br> tags.
+
+	$paragraphs = explode("\n\n", $html); // Split $html into an array of paragraphs.
+
+	if (sizeof($paragraphs) > 1) {
+
+		foreach ($paragraphs as &$p) { // Do foreach paragraph:
+
+			if ($state == ST_NORMAL) { // While in normal state
+
+				// Check, if there are <code> tags in the paragraph
+				if (($pos_begin = stripos($p, '<code>')) !== FALSE
+						|| stripos($p, '</code>') !== FALSE) {
+					$pos_end = stripos($p, '</code>'); // Calc $pos_end
+
+					if ($pos_begin !== FALSE) {
+						// Enter code state.
+						$state = ST_CODE;
+
+						// If <code> is not at the beginning of the line
+						if ($pos_begin > 0) {
+							$i = substr($p, 0, $pos_begin);
+
+							// Handle inline HTML.
+							handle_inline($i);
+
+							$p = substr_replace($p, $i, 0, $pos_begin);
+							$p = '<p>'.$p; // Prepend <p>.
+						}
+					}
+
+					if ($pos_end !== FALSE) {
+						// Exit code state.
+						$state = ST_NORMAL;
+
+						// If </code> is not at the end of the line
+						if ($pos_end < strlen($p) - 7) {
+							$i = substr($p, 0, $pos_end);
+
+							// Handle inline HTML.
+							handle_inline($i);
+
+							$p = substr_replace($p, $i, 0, $pos_end);
+							$p .= '</p>'; // Append </p>.
+						}
+					}
+
+					// If <code> is at the beginning and </code> at the end
+					if ($pos_begin === 0 && $pos_end === strlen($p) - 7) {
+						$p = '<pre>'.$p.'</pre>'; // Surround with <pre>.
+					}
+				} else {
+					handle_inline($p);
+					handle_paragraph($p);
+				}
+			} else if ($state == ST_CODE) {
+				$p = htmlspecialchars($p);
+			}
+		}
+		$html = implode("\n", $paragraphs);
+	}
+	return $html;
+}
+
