@@ -10,8 +10,17 @@
 ?>
 <h1>Tests for function <code>sanitize_email().</code></h1>
 <?php
-$emails = array('name@domain.com', 'c__j@domain.tld', 'näme@heinz.org', 'a@bö.de');
+$emails = array(
+	'name@domain.com',
+	'c__j@domain.tld',
+	'näme@heinz.org',
+	'a@bö.de',
+	'a-@mail.de',
+	'-@mail.de',
+	'this.is&wrong@domain.com',
+	'name@subdomain.domain.com'
+);
 foreach ($emails as $email) {
-	echo validate_email($email) === FALSE ? '<strong>error</strong>: '.$email : sanitize_email($email);
+	echo validate_email($email) == FALSE ? '<strong>error</strong>: '.$email : 'OK: '.$email;
 	echo "<br />\n";
 }
