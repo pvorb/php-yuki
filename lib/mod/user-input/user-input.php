@@ -89,6 +89,21 @@ function handle_paragraph(&$p) {
 define('ST_NORMAL', 0);
 define('ST_CODE', 1);
 
+function switch_state(&$state) {
+	$state = ($state + 1) % 2;
+}
+
+function handle_state(&$p, &$state) {
+	$elements = preg_split('#<(/)?code>#i', $p);
+
+	if ((sizeof($elements) % 2) == 0) { // even number
+
+	} else { // odd
+		switch_state($state);
+	}
+	var_dump(sizeof($elements));
+}
+
 /**
  * Sanitizes the HTML contents of a user entry.
  * @param string $html
@@ -104,59 +119,9 @@ function sanitize_user_html(&$html) {
 
 	if (sizeof($paragraphs) > 1) {
 
-		foreach ($paragraphs as &$p) { // Do foreach paragraph:
+		foreach ($paragraphs as &$p) // Do foreach paragraph:
+			handle_state($p, $state);
 
-			if ($state == ST_NORMAL) { // While in normal state
-
-				// Check, if there are <code> tags in the paragraph
-				if (($pos_begin = stripos($p, '<code>')) !== FALSE
-						|| stripos($p, '</code>') !== FALSE) {
-					$pos_end = stripos($p, '</code>'); // Calc $pos_end
-
-					if ($pos_begin !== FALSE) {
-						// Enter code state.
-						$state = ST_CODE;
-
-						// If <code> is not at the beginning of the line
-						if ($pos_begin > 0) {
-							$i = substr($p, 0, $pos_begin);
-
-							// Handle inline HTML.
-							handle_inline($i);
-
-							$p = substr_replace($p, $i, 0, $pos_begin);
-							$p = '<p>'.$p; // Prepend <p>.
-						}
-					}
-
-					if ($pos_end !== FALSE) {
-						// Exit code state.
-						$state = ST_NORMAL;
-
-						// If </code> is not at the end of the line
-						if ($pos_end < strlen($p) - 7) {
-							$i = substr($p, 0, $pos_end);
-
-							// Handle inline HTML.
-							handle_inline($i);
-
-							$p = substr_replace($p, $i, 0, $pos_end);
-							$p .= '</p>'; // Append </p>.
-						}
-					}
-
-					// If <code> is at the beginning and </code> at the end
-					if ($pos_begin === 0 && $pos_end === strlen($p) - 7) {
-						$p = '<pre>'.$p.'</pre>'; // Surround with <pre>.
-					}
-				} else {
-					handle_inline($p);
-					handle_paragraph($p);
-				}
-			} else if ($state == ST_CODE) {
-				$p = htmlspecialchars($p);
-			}
-		}
 		$html = implode("\n", $paragraphs);
 	}
 	return $html;
