@@ -26,23 +26,22 @@ $san_regex_replacement = array(
 define('PREG_IP', '#(\d{0,3}\.){3}\d{0,3}#i');
 define('PREG_PROTOCOL', '#^([[:alpha:]]+://|mailto:)#i');
 define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü]+\.)*[[:alnum:]äöü]+\.[[:alnum:]]+$#i');
-//define('PREG_URL', '');
 
 /**
  * Matches strings that begin with a protocol.
  * @param string $protocol
  * @return boolean
  */
-function validate_protocol(&$protocol) {
+function validate_protocol($protocol) {
 	return preg_match('#^([[:alpha:]]+://|mailto:)#i', $protocol) ? TRUE : FALSE;
 }
 
 /**
  * Matches strings that seem to be an email address.
  * @param string $email
- * @return boolean
+ * @return int
  */
-function validate_email(&$email) {
+function validate_email($email) {
 	return preg_match(PREG_EMAIL, $email);
 }
 
@@ -52,6 +51,19 @@ function validate_email(&$email) {
  * @return string
  */
 function sanitize_user_html(&$html) {
+	$br_tags = array('<br>', '<br/>');
+	$html = str_ireplace($br_tags, '<br />', $html); // Replace wrong <br> tags.
+
+	$paragraphs = explode("\n\n", $html); // Split $html into an array of paragraphs.
+		if (sizeof($paragraphs) > 1) {
+		foreach ($paragraphs as &$p) { // Do foreach paragraph:
+			if (!preg_match('#^<p[[:alnum:]="\']*>$#i', $p)
+					&& !strripos($p, '</p>')) // If it is not surrounded by <p>
+				$p = '<p>'.$p.'</p>'; // Add <p> tags.
+			$p = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $p);
+		}
+		$html = implode("\n", $paragraphs);
+	}
 	return $html;
 }
 
