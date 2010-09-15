@@ -75,60 +75,75 @@ function sanitize_url(&$url) {
 // -----------------------------------------------------------------------------
 // Under Construction:
 
-function sanitize_inline($i) {
+function sanitize_html_inline($html) {
 	// Replace multible <br /> tags with a single one.
-	$result = preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $i);
-	return $result;
+	return preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $html);
 }
 
-function sanitize_paragraph(&$p) {
-	if (!preg_match('#^<p[[:alnum:]="\']*>$#i', $p)
-			&& !strripos($p, '</p>')) // If it is not surrounded by <p>
-		$p = '<p>'.$p.'</p>'; // Add <p> tags.
-}
+define('SAN_BLOCK_ALLOWED', 'blockquote|ol|p|pre|ul');
 
-define('ST_NORMAL', 0);
-define('ST_CODE', 1);
-
-function switch_state(&$state) {
-	$state = ($state + 1) % 2;
-}
-
-function handle_state(&$p, &$state) {
-	$elements = preg_split('#<(/)?code>#i', $p);
-	$num_elems = sizeof($elements);
-	var_dump($elements);
-
-	if ($num_elems == 1) {
-		sanitize_paragraph($p);
-	} elseif ($num_elems % 2) { // odd number of elements
-		$p = '';
-		if ($state == ST_NORMAL) { // If normal state
-			if ($num_elems == 3 && $elements[0] == '' && $elements [2] == '') {
-				$p = '<pre><code>'.htmlspecialchars($elements[1]).'</code></pre>';
-			} else {
-				foreach ($elements as $key => &$element) { // for every element
-					if ($key == 0) {
-						$p .= '<p>'.sanitize_inline($value);
-					} elseif ($key == $num_elems - 1) {
-						$p .= sanitize_inline($value).'</p>';
-					} elseif ($key % 2) {
-						$p .= sanitize_inline($value);
-					} else {
-						$p .= '<code>'.htmlspecialchars($value).'</code>';
-					}
-				}
-			}
-		} else {
-		}
-	} else { // even number of elements in this line
-		switch_state($state);
-
-		if ($state == ST_NORMAL)
-			;
-		else
-			;
+function sanitize_html_paragraphs(&$html) {
+	// Sanitize every paragraph at its own
+	$paragraphs = explode("\n\n", $html);
+	foreach ($paragraphs as &$p) {
+		// Surround a paragraph with <p> tags if it isn't already surr. by one
+		// of the allowed HTML block elements.
+		if (!preg_match('#^<('.SAN_BLOCK_ALLOWED.')>#i', $p))
+			$p = '<p>'.$p.'</p>';
 	}
+	$html = implode("\n\n", $paragraphs);
+
+	// Sanitize line breaks
+	$html = preg_replace('#(<br/?>)+(\n)*[ ]*#i', '<br />'."\n", $html);
+}
+
+function sanitize_html_code_blocks(&$html) {
+	$offset = 0;
+	while (($pos1 = stripos($html, "\n\n".'<code>', $offset)) !== FALSE) {
+		$offset = $pos1 + 7;
+		if (($pos2 = stripos($html, '</code>'."\n\n", $offset)) !== FALSE) {
+			$offset = $pos2 + 9;
+
+			// Calculate search string
+			$search = substr($html, $pos1, $offset - $pos1);
+
+			// Sanitize code
+			$code = substr($search, 8, strlen($search) - 17);
+			$code = str_replace("\n\n", "\n \n", $code);
+			$code = sanitize_html_code($code);
+
+			// Add tags around it
+			$replace = "\n\n".'<pre><code>';
+			$replace .= $code;
+			$replace .= '</code></pre>'."\n\n";
+
+			// Replace $search with $replace
+			$html = str_replace($search, $replace, $html);
+		}
+	}
+}
+
+function sanitize_html_code_inline(&$html) {
+	if (preg_match_all('#<code>(.*)</code>#i', $html, $matches, PREG_SET_ORDER)) {
+		foreach ($matches as $match) {
+			$html = str_replace($match[0], sanitize_html_code($match[1]), $html);
+		}
+	}
+}
+
+// TODO Optimize
+function sanitize_html_anchors(&$html) {
+	if (preg_match_all('#([[:alpha:]]{2,8}://([[:alnum:]]+.)*[[:alnum:]]+\.[[:alpha:]]{2,10}(/[^ ]*)*)#i', $html, $matches, PREG_SET_ORDER))
+		foreach ($matches as $match) {
+			$html = str_replace($match[0], '<a href="'.htmlspecialchars($match[0], ENT_QUOTES).'">'.htmlspecialchars($match[0]).'</a>', $html);
+		}
+}
+
+function sanitize_html_code($code) {
+	$code = preg_replace('#^\n+#', '', $code);
+	$code = preg_replace('#\n+$#', '', $code);
+	$code = htmlspecialchars($code);
+	return $code;
 }
 
 /**
@@ -137,20 +152,22 @@ function handle_state(&$p, &$state) {
  * @return string
  */
 function sanitize_user_html(&$html) {
-	$state = ST_NORMAL;
+	// Remove Unicode BOM and SUB.
+	$html = preg_replace('#^\xEF\xBB\xBF|\x1A#', '', $html);
 
-	$br_tags = array('<br>', '<br/>');
-	$html = str_ireplace($br_tags, '<br />', $html); // Replace wrong <br> tags.
+	// Remove multiple spaces at line endings and convert line endings to UNIX.
+	$html = preg_replace('#[ ]+(\r\n?|\n)#', "\n", $html);
 
-	$paragraphs = explode("\n\n", $html); // Split $html into an array of paragraphs.
+	$html .= "\n"; // Add a final newline.
 
-	if (sizeof($paragraphs) > 1) {
+	// Sanitize code blocks.
+	sanitize_html_code_blocks($html);
+	// Sanitize inline code.
+	sanitize_html_code_inline($html);
+	// Sanitize paragraphs.
+	sanitize_html_paragraphs($html);
+	// Sanitize html anchors.
+	sanitize_html_anchors($html);
 
-		foreach ($paragraphs as &$p) // Do foreach paragraph:
-			handle_state($p, $state);
-
-		$html = implode("\n", $paragraphs);
-	}
 	return $html;
 }
-

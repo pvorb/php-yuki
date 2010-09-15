@@ -16,14 +16,30 @@ This is a small comment.
 It has got some paragraphs.<br>
 and some nice line breaks, too.
 
-<blockquote>A blockquote</blockquote>
-<cite>from Mike</cite>
+<blockquote>
+	<p>A blockquote<p>
+	<cite>from Mike</cite>
+</blockquote>
 
 and many other funny things.
+
+This is a paragraph with a hyperlink http://github.com. And this hyperlink
+"http://github.com/abc" is not detected.
 
 This is <code>inline code</code>.
 
 <code>Code block</code>
+
+<code>
+<html>
+	<head>
+		<title></title>
+	</head>
+
+	<body>
+	</body>
+</html>
+</code>
 
 <p>This is a small<br><br> paragraph with tags.</p>
 EOT;
@@ -33,4 +49,4 @@ echo sanitize_user_html($html);
 
 $html = '<?php echo $sth; ?>';
 
-echo sanitize_user_html($html);
+//echo sanitize_user_html($html);
