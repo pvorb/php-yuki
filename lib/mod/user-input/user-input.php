@@ -80,7 +80,10 @@ function sanitize_html_inline($html) {
 	return preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $html);
 }
 
-define('SAN_BLOCK_ALLOWED', 'blockquote|ol|p|pre|ul');
+if (!defined('SAN_BLOCK_ALLOWED'))
+	define('SAN_BLOCK_ALLOWED', 'blockquote|ol|p|pre|ul');
+if (!defined('SAN_INLINE_ALLOWED'))
+	define('SAN_INLINE_ALLOWED', 'li|em|strong');
 
 function sanitize_html_paragraphs(&$html) {
 	// Sanitize every paragraph at its own
@@ -93,7 +96,7 @@ function sanitize_html_paragraphs(&$html) {
 	}
 	$html = implode("\n\n", $paragraphs);
 
-	// Sanitize line breaks
+	// Sanitize line breaks: <br> and <br/> become <br />.
 	$html = preg_replace('#(<br/?>)+(\n)*[ ]*#i', '<br />'."\n", $html);
 }
 
@@ -131,11 +134,26 @@ function sanitize_html_code_inline(&$html) {
 	}
 }
 
-// TODO Optimize
 function sanitize_html_anchors(&$html) {
-	if (preg_match_all('#([[:alpha:]]{2,8}://([[:alnum:]]+.)*[[:alnum:]]+\.[[:alpha:]]{2,10}(/[^ ]*)*)#i', $html, $matches, PREG_SET_ORDER))
+	// Match all URLs
+	if (preg_match_all('#.([[:alpha:]]{2,8}://([[:alnum:]]+.)*[[:alnum:]]+\.[[:alpha:]]{2,10}(/[^ ]*)*).#i', $html, $matches, PREG_SET_ORDER))
 		foreach ($matches as $match) {
-			$html = str_replace($match[0], '<a href="'.htmlspecialchars($match[0], ENT_QUOTES).'">'.htmlspecialchars($match[0]).'</a>', $html);
+			$first = $match[0][0];
+			$last = $match[0][strlen($match[0]) - 1];
+			// Check if anchor is surrounded by spaces, new lines or followed by a dot.
+			if (($first == ' ' || $first == "\n") && ($last == ' ' || $last == "\n" || $last == '.')) {
+				// Trim spaces, new lines and dots
+				$repl = trim($match[0], " \n.");
+
+				// Replacement: <a href="URL">URL</a>
+				$repl = str_replace($repl, '<a href="'.htmlspecialchars($repl, ENT_QUOTES).'">'.htmlspecialchars($repl).'</a>', $match[0]);
+
+				// Replace the whole match including spaces, new lines or dots.
+				// This is important if you want to avoid the replacement of
+				// multiple occurences of the same URL and one of them is not
+				// surrounded by these characters.
+				$html = str_replace($match[0], $repl, $html);
+			}
 		}
 }
 
