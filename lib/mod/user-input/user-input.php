@@ -175,7 +175,7 @@ function sanitize_html_filter(&$html) {
  * @param string $html
  * @return string
  */
-function sanitize_user_html(&$html) {
+function sanitize_user_html($html) {
 	// Remove Unicode BOM and SUB.
 	$html = preg_replace('#^\xEF\xBB\xBF|\x1A#', '', $html);
 
