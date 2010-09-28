@@ -57,9 +57,10 @@ function sanitize_url(&$url) {
 	return htmlspecialchars($url);
 }
 
-// -----------------------------------------------------------------------------
-// Under Construction:
-
+/**
+ * Sanitizes inline HTML.
+ * @param string $html
+ */
 function sanitize_html_inline($html) {
 	// Replace multible <br /> tags with a single one.
 	return preg_replace('#(<br />)+[[:space:]]*#i', "<br />\n", $html);
@@ -72,6 +73,10 @@ if (!defined('SAN_INLINE_ALLOWED'))
 if (!defined('SAN_ATTR_ALLOWED'))
 	define('SAN_ATTR_ALLOWED', 'class');
 
+/**
+ * Sanitizes paragraphs of the given HTML.
+ * @param string $html
+ */
 function sanitize_html_paragraphs(&$html) {
 	// Sanitize every paragraph at its own
 	$paragraphs = explode("\n\n", $html);
@@ -90,12 +95,20 @@ function sanitize_html_paragraphs(&$html) {
 	$html = preg_replace('#(<br/?>)+(\n)*[ ]*#i', '<br />'."\n", $html);
 }
 
+/**
+ * Sanitizes plain code for use in HTML.
+ * @param string $code
+ */
 function sanitize_html_code($code) {
 	$code = trim($code, "\n");
 	$code = htmlspecialchars($code);
 	return $code;
 }
 
+/**
+ * Sanitize blocks of code for use in HTML.
+ * @param string $html
+ */
 function sanitize_html_code_blocks(&$html) {
 	$offset = 0;
 	while (($pos1 = stripos($html, "\n\n".'<code>', $offset)) !== FALSE) {
@@ -122,6 +135,10 @@ function sanitize_html_code_blocks(&$html) {
 	}
 }
 
+/**
+ * Sanitizes inline code for use in HTML.
+ * @param string $html
+ */
 function sanitize_html_code_inline(&$html) {
 	if (preg_match_all('#<code>(.*)</code>#i', $html, $matches, PREG_SET_ORDER)) {
 		foreach ($matches as $match) {
@@ -130,6 +147,10 @@ function sanitize_html_code_inline(&$html) {
 	}
 }
 
+/**
+ * Sanitizes HTML anchors and detects URLs in the text.
+ * @param string $html
+ */
 function sanitize_html_anchors(&$html) {
 	// Match all URLs
 	if (preg_match_all('#.([[:alpha:]]{2,8}://([[:alnum:]]+.)*[[:alnum:]]+\.[[:alpha:]]{2,10}(/[^ ]*)*).#i', $html, $matches, PREG_SET_ORDER))
@@ -153,6 +174,11 @@ function sanitize_html_anchors(&$html) {
 		}
 }
 
+/**
+ * Filters unwanted HTML elements and removes them from markup.
+ * Also replaces some tags by more reasonable ones.
+ * @param string $html
+ */
 function sanitize_html_filter(&$html) {
 	// Replace <b> by <strong> and <i> by <em>
 	$search = array('<b>', '</b>', '<i>', '</i>');
