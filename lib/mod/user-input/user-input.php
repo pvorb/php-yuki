@@ -8,21 +8,6 @@
  * @package org.genitis.yuki.mod.user-input
  */
 
-$san_str_replacement = array(
-	'<!--'       => '&lt;!--',
-	'-->'        => '--&gt;',
-	'<![CDATA['  => '&lt;![CDATA[',
-	'<?'         => '&lt;?',
-	'?>'         => '?&gt;'
-);
-
-$san_regex_replacement = array(
-	'javascript\s*:'            => '[removed]',
-	'expression\s*(\(|&\#40;)'  => '[removed]',
-	'vbscript\s*:'              => '[removed]',
-	'Redirect\s+302'            => '[removed]'
-);
-
 define('PREG_IP', '#(\d{0,3}\.){3}\d{0,3}#i');
 define('PREG_PROTOCOL', '#^([[:alpha:]]+://|mailto:)#i');
 define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü]+\.)*[[:alnum:]äöü]+\.[[:alnum:]]+$#i');
@@ -81,23 +66,31 @@ function sanitize_html_inline($html) {
 }
 
 if (!defined('SAN_BLOCK_ALLOWED'))
-	define('SAN_BLOCK_ALLOWED', 'blockquote|ol|p|pre|ul');
+	define('SAN_BLOCK_ALLOWED', 'blockquote|ul|ol|p|pre');
 if (!defined('SAN_INLINE_ALLOWED'))
-	define('SAN_INLINE_ALLOWED', 'li|em|strong');
+	define('SAN_INLINE_ALLOWED', 'a|em|strong|code|br|li|cite');
+if (!defined('SAN_ATTR_ALLOWED'))
+	define('SAN_ATTR_ALLOWED', 'class');
 
 function sanitize_html_paragraphs(&$html) {
 	// Sanitize every paragraph at its own
 	$paragraphs = explode("\n\n", $html);
 	foreach ($paragraphs as &$p) {
 		// Surround a paragraph with <p> tags if it isn't already surr. by one
-		// of the allowed HTML block elements.
-		if (!preg_match('#^<('.SAN_BLOCK_ALLOWED.')>#i', $p))
+		// of the allowed HTML block elements or empty.
+		if (!preg_match('#^<('.SAN_BLOCK_ALLOWED.')>#i', $p) && $p != '')
 			$p = '<p>'.$p.'</p>';
 	}
 	$html = implode("\n\n", $paragraphs);
 
 	// Sanitize line breaks: <br> and <br/> become <br />.
 	$html = preg_replace('#(<br/?>)+(\n)*[ ]*#i', '<br />'."\n", $html);
+}
+
+function sanitize_html_code($code) {
+	$code = trim($code, "\n");
+	$code = htmlspecialchars($code);
+	return $code;
 }
 
 function sanitize_html_code_blocks(&$html) {
@@ -157,11 +150,21 @@ function sanitize_html_anchors(&$html) {
 		}
 }
 
-function sanitize_html_code($code) {
-	$code = preg_replace('#^\n+#', '', $code);
-	$code = preg_replace('#\n+$#', '', $code);
-	$code = htmlspecialchars($code);
-	return $code;
+function sanitize_html_filter(&$html) {
+	// Replace <b> by <strong> and <i> by <em>
+	$search = array('<b>', '</b>', '<i>', '</i>');
+	$replace = array('<strong>', '</strong>', '<em>', '</em>');
+	$html = str_ireplace($search, $replace, $html);
+
+	// Filter out unwanted elements and remove them from the markup.
+	preg_match_all('#</?[^<>]+/?>#i', $html, $matches);
+	foreach ($matches[0] as &$match) {
+		$pattern = '#^<('.SAN_BLOCK_ALLOWED.'|'.SAN_INLINE_ALLOWED.')( ('
+			.SAN_ATTR_ALLOWED.'="[^"<>]*"))*>|<a href="[^"<>]*">|</('
+			.SAN_BLOCK_ALLOWED.'|'.SAN_INLINE_ALLOWED.')>$#i';
+		if (!preg_match($pattern, $match))
+			$html = str_replace($match, '', $html);
+	}
 }
 
 /**
@@ -186,6 +189,8 @@ function sanitize_user_html(&$html) {
 	sanitize_html_paragraphs($html);
 	// Sanitize html anchors.
 	sanitize_html_anchors($html);
+	// Filter out everything that is not allowed.
+	sanitize_html_filter($html);
 
 	return $html;
 }
