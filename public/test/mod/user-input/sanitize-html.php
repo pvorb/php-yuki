@@ -45,11 +45,11 @@ This is <code>inline code</code>.
 
 EOT;
 
-echo sanitize_user_html($html);
+echo sanitize_html($html)."\n\n";
 
 $html = 'Hallo';
 
-echo sanitize_user_html($html);
+echo sanitize_html($html)."\n\n";
 
 
 $html = '
@@ -58,4 +58,4 @@ $html = '
 
 ';
 
-echo sanitize_user_html($html);
+echo sanitize_html($html)."\n\n";
