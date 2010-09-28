@@ -76,9 +76,12 @@ function sanitize_html_paragraphs(&$html) {
 	// Sanitize every paragraph at its own
 	$paragraphs = explode("\n\n", $html);
 	foreach ($paragraphs as &$p) {
+		// Remove blank lines.
+		if (preg_match('#^[[:blank:]]*$#', $p))
+			$p = null;
 		// Surround a paragraph with <p> tags if it isn't already surr. by one
-		// of the allowed HTML block elements or empty.
-		if (!preg_match('#^<('.SAN_BLOCK_ALLOWED.')>#i', $p) && $p != '')
+		// of the allowed HTML block elements.
+		elseif (!preg_match('#^<('.SAN_BLOCK_ALLOWED.')>#i', $p))
 			$p = '<p>'.$p.'</p>';
 	}
 	$html = implode("\n\n", $paragraphs);
@@ -122,7 +125,7 @@ function sanitize_html_code_blocks(&$html) {
 function sanitize_html_code_inline(&$html) {
 	if (preg_match_all('#<code>(.*)</code>#i', $html, $matches, PREG_SET_ORDER)) {
 		foreach ($matches as $match) {
-			$html = str_replace($match[0], sanitize_html_code($match[1]), $html);
+			$html = str_replace($match[0], '<code>'.sanitize_html_code($match[1]).'</code>', $html);
 		}
 	}
 }
@@ -160,8 +163,8 @@ function sanitize_html_filter(&$html) {
 	preg_match_all('#</?[^<>]+/?>#i', $html, $matches);
 	foreach ($matches[0] as &$match) {
 		$pattern = '#^<('.SAN_BLOCK_ALLOWED.'|'.SAN_INLINE_ALLOWED.')( ('
-			.SAN_ATTR_ALLOWED.'="[^"<>]*"))*>|<a href="[^"<>]*">|</('
-			.SAN_BLOCK_ALLOWED.'|'.SAN_INLINE_ALLOWED.')>$#i';
+			.SAN_ATTR_ALLOWED.'="[^"<>]*"))*>|<a href="[^"<>]*">|<br />|</('
+			.SAN_BLOCK_ALLOWED.'|'.SAN_INLINE_ALLOWED.'|)>$#i';
 		if (!preg_match($pattern, $match))
 			$html = str_replace($match, '', $html);
 	}
@@ -179,7 +182,8 @@ function sanitize_user_html(&$html) {
 	// Remove multiple spaces at line endings and convert line endings to UNIX.
 	$html = preg_replace('#[ ]+(\r\n?|\n)#', "\n", $html);
 
-	$html .= "\n"; // Add a final newline.
+	// Trim new lines from beginning and end.
+	$html = trim($html, "\n");
 
 	// Sanitize code blocks.
 	sanitize_html_code_blocks($html);
@@ -191,6 +195,8 @@ function sanitize_user_html(&$html) {
 	sanitize_html_anchors($html);
 	// Filter out everything that is not allowed.
 	sanitize_html_filter($html);
+
+	$html .= "\n"; // Add a final new line.
 
 	return $html;
 }
