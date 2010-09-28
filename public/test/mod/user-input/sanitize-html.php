@@ -24,7 +24,7 @@ and some nice line breaks, too.
 and many other funny things.
 
 This is a paragraph with a hyperlink http://github.com. And this hyperlink
-"http://github.com/abc" is not detected.
+"http://github.com/abc" is not detected.<unallowed tag />
 
 This is <code>inline code</code>.
 
@@ -42,11 +42,20 @@ This is <code>inline code</code>.
 </code>
 
 <p>This is a small<br><br> paragraph with tags.</p>
+
 EOT;
 
 echo sanitize_user_html($html);
 
+$html = 'Hallo';
 
-$html = '<?php echo $sth; ?>';
+echo sanitize_user_html($html);
 
-//echo sanitize_user_html($html);
+
+$html = '
+
+<code><?php echo $sth; ?></code>
+
+';
+
+echo sanitize_user_html($html);
