@@ -4,7 +4,7 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.3.0
  * @package org.genitis.yuki
  */
 
@@ -30,34 +30,29 @@ function redirect($type, $location, $search = FALSE) {
 	exit;
 }
 
-///**
-// * This class enables you to get real uuids using the OSSP library.
-// * Note you need php-uuid installed.
-// *
-// * @author Marius Karthaus, Paul Vorbach
-// */
-//class uuid {
-//
-//	protected $uuidobject;
-//
-//	/**
-//	 * On long running deamons i've seen a lost resource. This checks the resource and creates it if needed.
-//	 */
-//	protected function create() {
-//		if (!is_resource($this->uuidobject)) {
-//			uuid_create(&$this->uuidobject);
-//		}
-//	}
-//
-//	/**
-//	 * Return a type 5 (SHA-1 hash) uuid
-//	 *
-//	 * @return string
-//	 */
-//	public function uuid_v5() {
-//		$this->create();
-//		uuid_make($this->uuidobject, UUID_MAKE_V5);
-//		uuid_export($this->uuidobject, UUID_FMT_STR, &$uuidstring);
-//		return trim($uuidstring);
-//	}
-//}
+/**
+ * Loads the modules in the given array.
+ *
+ * @param array $array array of strings with path strings relative to 'lib/mod/'.
+ */
+function load_modules(&$modules) {
+	foreach ($modules as $mod) {
+		require_once 'mod/'.$mod;
+	}
+}
+
+/**
+ * Returns the current date as defined in DATE_FORMAT.
+ * @return string
+ */
+function current_date() {
+	return date(DATE_FORMAT);
+}
+
+/**
+ * Return the current time as defined in TIME_FORMAT.
+ * @return string
+ */
+function current_time() {
+	return date(TIME_FORMAT);
+}
