@@ -10,7 +10,7 @@
 
 // Requires conf.php
 require_once '../lib/conf.php';
-// Define
+// Define public dir
 define('DIR_PUB', dirname(__FILE__));
 
 // Set $_GET['q'] as $path, default is ''.
@@ -37,7 +37,7 @@ if ($path == '') {
 
 if (USES_MULTIPLE_LANGUAGES) {
 	// Set a language
-	$lang = 'de';
+	$lang = 'en';
 	if (isset($_GET['lang'])) {
 		$lang = $_GET['lang'];
 		unset($_GET['lang']);

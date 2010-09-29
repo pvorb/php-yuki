@@ -11,3 +11,11 @@ All you need is an *Apache HTTP Server* with a *PHP* installation and the Apache
 
 Now you are able to add your HTML files and whatever you like.
 
+## Example site
+There's a tiny example project available if you `git checkout example-site`. Just have a look.
+
+If you need a real life example look at [genitis.org](http://www.genitis.org) and [the genitis repo](http://github.com/pvorb/genitis) respectively.
+
+## Current development
+At the moment I am developing a module for adding commenting functionality to documents. Simply `git checkout mod-comment`
+
