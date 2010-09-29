@@ -46,7 +46,7 @@ function sanitize_string(&$string) {
  */
 function sanitize_url(&$url) {
 	// if there’s no protocol given
-	if (!match_protocol($url)) {
+	if (!validate_protocol($url)) {
 		// if it’s an email adress
 		if (strpos($url, '@'))
 			$url = 'mailto://'.$url;
