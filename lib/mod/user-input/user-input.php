@@ -10,7 +10,7 @@
 
 define('PREG_IP', '#(\d{0,3}\.){3}\d{0,3}#i');
 define('PREG_PROTOCOL', '#^([[:alpha:]]+://|mailto:)#i');
-define('PREG_NAME', '#^[^[:cntrl:]<>]+$');
+define('PREG_NAME', '#^[^[:cntrl:]<>]+$#');
 define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü\-]+\.)+[[:alpha:]]+$#i');
 define('PREG_URL', '#((http(s)?:)?//)?([[:alnum:]äöü\-]\.)+[[:alpha:]]+[^[:cntrl:]<>]*$#i');
 
@@ -20,7 +20,7 @@ define('PREG_URL', '#((http(s)?:)?//)?([[:alnum:]äöü\-]\.)+[[:alpha:]]+[^[:cn
  * @return int
  */
 function validate_protocol($protocol) {
-	return preg_match('#^([[:alpha:]]+://|mailto:)#i', $protocol) ? TRUE : FALSE;
+	return preg_match(PREG_PROTOCOL, $protocol);
 }
 
 /**
