@@ -10,15 +10,26 @@
 
 define('PREG_IP', '#(\d{0,3}\.){3}\d{0,3}#i');
 define('PREG_PROTOCOL', '#^([[:alpha:]]+://|mailto:)#i');
-define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü]+\.)*[[:alnum:]äöü]+\.[[:alnum:]]+$#i');
+define('PREG_NAME', '#^[^[:cntrl:]<>]+$#');
+define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü\-]+\.)+[[:alpha:]]+$#i');
+define('PREG_URL', '#((http(s)?:)?//)?([[:alnum:]äöü\-]\.)+[[:alpha:]]+[^[:cntrl:]<>]*$#i');
 
 /**
  * Matches strings that begin with a protocol.
  * @param string $protocol
- * @return boolean
+ * @return int
  */
 function validate_protocol($protocol) {
-	return preg_match('#^([[:alpha:]]+://|mailto:)#i', $protocol) ? TRUE : FALSE;
+	return preg_match(PREG_PROTOCOL, $protocol);
+}
+
+/**
+ * Matches strings that are allowed as names.
+ * @param string $name
+ * @return int
+ */
+function validate_name($name) {
+	return preg_match(PREG_NAME, $name);
 }
 
 /**
@@ -28,6 +39,15 @@ function validate_protocol($protocol) {
  */
 function validate_email($email) {
 	return preg_match(PREG_EMAIL, $email);
+}
+
+/**
+ * Matches strings that seem to be a URL.
+ * @param string $url
+ * @return int
+ */
+function validate_url($url) {
+	return preg_match(PREG_URL, $url);
 }
 
 /**
@@ -46,7 +66,7 @@ function sanitize_string(&$string) {
  */
 function sanitize_url(&$url) {
 	// if there’s no protocol given
-	if (!match_protocol($url)) {
+	if (!validate_protocol($url)) {
 		// if it’s an email adress
 		if (strpos($url, '@'))
 			$url = 'mailto://'.$url;
