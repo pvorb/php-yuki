@@ -9,6 +9,7 @@
  */
 ?>
 <h1>Tests for function <code>sanitize_html()</code></h1>
+<h2>Nice input</h2>
 <?php
 $html = <<<EOT
 This is a small comment.
@@ -57,5 +58,52 @@ $html = '
 <code><?php echo $sth; ?></code>
 
 ';
+
+echo sanitize_html($html)."\n\n";
+?>
+<h2>XSS input</h2>
+<?php
+$html = <<<EOT
+<a onload=alert('XSS')></a>
+'';!--"<XSS>=&{()}
+<IMG SRC="javascript:alert('XSS');">
+<IMG """><SCRIPT>alert("XSS")</SCRIPT>">
+<IMG SRC="jav	ascript:alert('XSS');">
+<IMG SRC="jav&#x0A;ascript:alert('XSS');">
+<IMG
+SRC
+=
+"
+j
+a
+v
+a
+s
+c
+r
+i
+p
+t
+:
+a
+l
+e
+r
+t
+(
+'
+X
+S
+S
+'
+)
+"
+>
+<<SCRIPT>alert("XSS");//<</SCRIPT>
+<SCRIPT SRC=http://ha.ckers.org/xss.js?<B>
+<IMG SRC="javascript:alert('XSS')"
+<A HREF="h
+tt	p://6&#9;6.000146.0x7.147/">XSS</A>
+EOT;
 
 echo sanitize_html($html)."\n\n";
