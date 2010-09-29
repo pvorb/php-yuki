@@ -1,3 +1,3 @@
 <div class="new">
-	<p>You comment has been saved.</p>
+	<p>Your comment has been saved.</p>
 </div>
