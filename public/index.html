@@ -8,8 +8,9 @@
 	<body>
 		<p>Demo</p>
 <?php
-comments();
-comment_form();
+$c = new comment();
+$c->print_list();
+$c->print_form();
 ?>
 	</body>
 </html>
