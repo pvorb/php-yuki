@@ -1,20 +1,18 @@
 <?php
 /**
- * This file provides a function, which may be used by any html file to add an
- * 'add comment' form.
+ * Commenting module, which may be used by any html file to add a comment form
+ * and show previously saved comments.
+ *
+ * There are the public methods print_form() and print_list().
  *
  * Usage:
- *   Simply type <?php comment_form(); ?> wherever you need it.
- *
- * There is the comments() function, too, which provides a possibility to
- * include every comment into the page that has been postet.
- *
- * Usage:
- *   Simply type <?php comments(); ?> wherever you need it.
+ *   To use this class simply create a new comment object with
+ *   $c = new comment(). Then print the things you want to show with
+ *   $c->print_list() and $c->print_form().
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.1
+ * @version 0.2.0
  * @package org.genitis.yuki.mod.comment
  */
 
@@ -26,6 +24,9 @@ class comment {
 	private $mode = 0, $message = '', $user = '', $email = '', $website = '',
 		$date = '', $time = '', $errors = array(), $is_valid = FALSE;
 
+	/**
+	 * Creates a new comment object.
+	 */
 	function __construct() {
 		if (isset($_POST['comment-preview'])) {
 			$this->mode = COMMENT_MODE_PREVIEW;
@@ -49,8 +50,9 @@ class comment {
 	}
 
 	/**
-	 * Lists the comments. This method may be used by any html file to add the
-	 * already posted comments.
+	 * Lists the comments.
+	 *
+	 * This method may be used by any html file to show the already posted comments.
 	 */
 	function print_list() {
 		global $is_index, $index, $content;
@@ -79,6 +81,15 @@ class comment {
 				include 'comment_preview.tpl';
 			}
 		}
+	}
+
+	/**
+	 * Inserts the comment form.
+	 *
+	 * This function may be used by any html file to add an comment form.
+	 */
+	function print_form() {
+		include 'comment_form.tpl';
 	}
 
 	/**
@@ -145,16 +156,5 @@ class comment {
 		fwrite($f, $comment);
 		// Close
 		fclose($f);
-	}
-
-	/**
-	 * Inserts the comment form. This function may be used by any html file to add
-	 * an 'add comment' form.
-	 *
-	 * Usage:
-	 *   Simply type <?php comment_form(); ?> wherever you need it.
-	 */
-	function print_form() {
-		include 'comment_form.tpl';
 	}
 }
