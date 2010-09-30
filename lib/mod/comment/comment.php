@@ -18,11 +18,38 @@
  * @package org.genitis.yuki.mod.comment
  */
 
+define('COMMENT_MODE_LIST', 0);
+define('COMMENT_MODE_PREVIEW', 1);
+define('COMMENT_MODE_SAVE', 2);
+
 class comment {
-	private $message, $user, $email, $website, $date, $time, $errors;
+	private $mode = 0, $message = '', $user = '', $email = '', $website = '',
+		$date = '', $time = '', $errors = array(), $is_valid = FALSE;
+
+	function __construct() {
+		if (isset($_POST['comment-preview'])) {
+			$this->mode = COMMENT_MODE_PREVIEW;
+		} elseif (isset($_POST['comment-save'])) {
+			$this->mode = COMMENT_MODE_SAVE;
+		} else {
+			$this->mode = COMMENT_MODE_LIST;
+		}
+
+		if ($this->mode != COMMENT_MODE_LIST) {
+			// Set new comment data.
+			$this->message = $_POST['comment-message'];
+			$this->user    = $_POST['comment-name'];
+			$this->email   = $_POST['comment-email'];
+			$this->website = $_POST['comment-website'];
+
+			// Set current date and time.
+			$this->date    = current_date();
+			$this->time    = current_time();
+		}
+	}
 
 	/**
-	 * Inserts the comments. This function may be used by any html file to add the
+	 * Lists the comments. This method may be used by any html file to add the
 	 * already posted comments.
 	 */
 	function print_list() {
@@ -34,93 +61,90 @@ class comment {
 			include DIR_PUB.'/'.$content.'.comments';
 
 		// Comment saving and inclusion logic
-		if (isset($_POST['comment-preview'])) {
-			// If a preview is requested, show it
-			validate_comment();
-			sanitize_comment();
+		if ($this->mode == COMMENT_MODE_PREVIEW) {
+			// If a preview is requested, show it.
+			$this->validate();
+			$this->sanitize();
 			include 'comment_preview.tpl';
-		} else if (isset($_POST['comment-new'])) {
-			// If a save is requested, check validity of the comment
-			if (validate_comment()) {
+		} elseif ($this->mode == COMMENT_MODE_SAVE) {
+			// If a save is requested, check validity of the comment.
+			$this->validate();
+			if ($this->is_valid) {
 				// Save, if it is valid and show the new comment.
-				sanitize_comment();
-				save_comment();
+				$this->save();
 				include 'comment_new.tpl';
 			} else {
 				// Do not save it, if it is not valid and show the preview.
-				sanitize_comment();
+				$this->sanitize();
 				include 'comment_preview.tpl';
 			}
 		}
 	}
 
 	/**
-	 * Validates a comment.
+	 * Validates the comment.
 	 */
-	private function validate_comment() {
-		global $comment_errors;
+	private function validate() {
+		$this->errors = array();
 
-		if (!validate_name($_POST['comment-name']))
-			$comment_errors['name'] = TRUE;
-		if (!validate_url($_POST['comment-website']))
-			$comment_errors['website'] = TRUE;
-		if (!validate_email($_POST['comment-email']))
-			$comment_errors['email'] = TRUE;
+		// Validate values.
+		if (!validate_name($this->user))
+			$this->errors['name'] = TRUE;
+		if (!validate_url($this->website))
+			$this->errors['website'] = TRUE;
+		if (!validate_email($this->email))
+			$this->errors['email'] = TRUE;
 
-		if (isset($comment_errors))
-			return FALSE;
-		else
-			return TRUE;
+		if (count($this->errors) == 0)
+			$this->is_valid = TRUE;
 	}
 
 
 	/**
 	 * Sanitizes a comment.
 	 */
-	private function sanitize_comment() {
+	private function sanitize() {
 		global $is_index, $index, $content;
-		global $comment_message, $comment_name, $comment_email, $comment_website,
-			$comment_date, $comment_time, $comment_errors;
 
 		// Sanitize user input
-		$comment_message = sanitize_html($_POST['comment-message']);
-		$comment_name    = sanitize_string($_POST['comment-name']);
-		$comment_email   = $_POST['comment-email'];
-		$comment_website = sanitize_url($_POST['comment-website']);
+		$this->message = sanitize_html($_POST['comment-message']);
+		$this->name    = sanitize_string($_POST['comment-name']);
+		$this->email   = $_POST['comment-email'];
+		$this->website = sanitize_url($_POST['comment-website']);
 
 		// Get date, time
-		$comment_date    = current_date();
-		$comment_time    = current_time();
+		$this->date    = current_date();
+		$this->time    = current_time();
 	}
 
 	/**
 	 * Writes a new comment to the comments file of the article.
 	 */
-	private function save_comment() {
+	private function save() {
 		global $is_index, $index, $content;
-		global $comment_message, $comment_name, $comment_email, $comment_website,
-			$comment_date, $comment_time, $comment_errors;
+
+		$this->sanitize();
 
 		// Get contents of template
 		$comment = file_get_contents(dirname(__FILE__).'/comment.tpl');
 		// Replace patterns with values
-		$comment = str_replace('{{{comment_message}}}', $comment_message, $comment);
-		$comment = str_replace('{{{comment_by}}}', $comment_website
-				? '<a href="'.$comment_website.'">'.$comment_name.'</a>'
-				: '<span>'.$comment_name.'</span>', $comment);
-		$comment = str_replace('{{{comment_date}}}', $comment_date, $comment);
-		$comment = str_replace('{{{comment_time}}}', $comment_time, $comment);
+		$comment = str_replace('{{{comment_message}}}', $this->message, $comment);
+		$comment = str_replace('{{{comment_by}}}', $this->website
+				? '<a href="'.$this->website.'">'.$this->name.'</a>'
+				: '<span>'.$this->name.'</span>', $comment);
+		$comment = str_replace('{{{comment_date}}}', $this->date, $comment);
+		$comment = str_replace('{{{comment_time}}}', $this->time, $comment);
 
 		// Open comments file for writing
 		if ($is_index)
-			$fwh = fopen($index.'.comments', 'ab');
+			$f = fopen($index.'.comments', 'ab');
 		else
-			$fwh = fopen($content.'.comments', 'ab');
+			$f = fopen($content.'.comments', 'ab');
 
 		// Write $comment to the end of the file
-		fwrite($fwh, $comment);
+		fwrite($f, $comment);
 		// Close
-		fclose($fwh);
+		fclose($f);
 	}
 
 	/**
@@ -131,9 +155,6 @@ class comment {
 	 *   Simply type <?php comment_form(); ?> wherever you need it.
 	 */
 	function print_form() {
-		global $comment_message, $comment_name, $comment_email, $comment_website,
-			$comment_date, $comment_time, $comment_errors;
-
 		include 'comment_form.tpl';
 	}
 }
