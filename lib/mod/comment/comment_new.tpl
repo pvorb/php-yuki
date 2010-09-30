@@ -1,9 +1,9 @@
 <div class="comment new">
 	<div class="content">
-<?php echo $comment_message; ?>
+<?php echo $this->message; ?>
 	</div>
 	<div class="meta">
-		Comment by <?php if ($comment_website) echo '<a href="'.$comment_website.'">'.$comment_name.'</a>'; ?> on <?php echo $comment_date; ?> at <?php echo $comment_time; ?>.
+		Comment by <?php if ($this->website) echo '<a href="'.$this->website.'">'.$this->name.'</a>'; ?> on <?php echo $this->date; ?> at <?php echo $this->time; ?>.
 	</div>
 
 	<p><strong>Your comment has been saved.</strong></p>
