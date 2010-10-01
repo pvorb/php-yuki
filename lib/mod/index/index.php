@@ -63,11 +63,15 @@ class index {
 						foreach ($file_ext as $ext) {
 							if (strripos($file, $ext) !== FALSE) {
 								if ($this->use_pattern
-										&& preg_match('#^'.$this->pattern[$this->level].'\\'.$ext.'$#i', $file)
-										|| !$this->use_pattern)
+										&& preg_match('#^'.$this->pattern[$this->level].'\\'.$ext.'$#i', $file)) {
+									$file = basename($file, $ext);
+									if ($file != 'index')
+										$index[] = $root.DIRECTORY_SEPARATOR.$file;
+									break;
+								} elseif (!$this->use_pattern) {
 									$index[] = $root.DIRECTORY_SEPARATOR.$file;
-
-								break;
+									break;
+								}
 							}
 						}
 					}
@@ -91,5 +95,9 @@ class index {
 		}
 
 		echo '</ul>'."\n\n";
+	}
+
+	function save() {
+
 	}
 }
