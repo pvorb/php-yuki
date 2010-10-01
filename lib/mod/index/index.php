@@ -52,7 +52,7 @@ class index {
 			while(($file = readdir($dir)) !== FALSE) {
 				if ($file != '.' && $file != '..') {
 					if (is_dir($root.DIRECTORY_SEPARATOR.$file)) {
-						if ($this->use_pattern && preg_match('#^'.$this->pattern[$this->level].'$#i', $file)) {
+						if ($this->use_pattern && preg_match('#^'.$this->pattern[$this->level].'$#', $file)) {
 							$this->level++;
 							$this->go_into($root.DIRECTORY_SEPARATOR.$file, $index);
 							$this->level--;
