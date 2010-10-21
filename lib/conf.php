@@ -25,6 +25,8 @@
 define('DIR_LIB', dirname(__FILE__));
 define('DIR_MOD', DIR_LIB.DIRECTORY_SEPARATOR.'mod');
 
+define('DIR_SEP', DIRECTORY_SEPARATOR);
+
 define('ERROR_PAGE_404', 'error/404/');
 define('USES_MULTIPLE_LANGUAGES', FALSE);
 define('DEFAULT_LANG', 'en');

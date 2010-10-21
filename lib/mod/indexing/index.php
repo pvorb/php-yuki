@@ -31,7 +31,7 @@ class index {
 	 * Generate the new index.
 	 * @return array
 	 */
-	private function make() {
+	private function make_all() {
 		$this->index = array();
 
 		$this->go_into($this->root, $this->index);
@@ -47,29 +47,32 @@ class index {
 	 */
 	function go_into($root, &$index) {
 		global $file_ext;
+		$max_level = count($this->pattern);
 
+		// Open root directory
 		if (($dir = opendir($root)) != FALSE) {
+			// Read files/directories
 			while(($file = readdir($dir)) !== FALSE) {
 				if ($file != '.' && $file != '..') {
-					if (is_dir($root.DIRECTORY_SEPARATOR.$file)) {
-						if ($this->use_pattern && preg_match('#^'.$this->pattern[$this->level].'$#', $file)) {
+					if (is_dir($root.DIR_SEP.$file)) {
+						if ($this->use_pattern && preg_match('#^'.$this->pattern[$this->level].'$#i', $file)) {
 							$this->level++;
-							$this->go_into($root.DIRECTORY_SEPARATOR.$file, $index);
+							$this->go_into($root.DIR_SEP.$file, $index);
 							$this->level--;
 						} elseif (!$this->use_pattern) {
-							$this->go_into($root.DIRECTORY_SEPARATOR.$file, $index);
+							$this->go_into($root.DIR_SEP.$file, $index);
 						}
 					} else {
 						foreach ($file_ext as $ext) {
 							if (strripos($file, $ext) !== FALSE) {
-								if ($this->use_pattern
+								if ($this->use_pattern && $this->level < $max_level
 										&& preg_match('#^'.$this->pattern[$this->level].'\\'.$ext.'$#i', $file)) {
 									$file = basename($file, $ext);
 									if ($file != 'index')
-										$index[] = $root.DIRECTORY_SEPARATOR.$file;
+										$index[] = $root.DIR_SEP.$file;
 									break;
 								} elseif (!$this->use_pattern) {
-									$index[] = $root.DIRECTORY_SEPARATOR.$file;
+									$index[] = $root.DIR_SEP.$file;
 									break;
 								}
 							}
@@ -82,13 +85,19 @@ class index {
 		}
 	}
 
+	private function make() {
+		$this->index = array();
+
+
+	}
+
 	/**
 	 * Prints all items in the index to a HTML list.
 	 */
-	function print_list() {
+	function print_file_list() {
 		echo '<ul>'."\n";
 		if ($this->index == NULL)
-			$this->make();
+			$this->make_all();
 
 		foreach ($this->index as $entry) {
 			echo "\t".'<li><code>'.$entry.'</code></li>'."\n";
@@ -97,7 +106,11 @@ class index {
 		echo '</ul>'."\n\n";
 	}
 
-	function save() {
-
+	function save($file) {
+		if (($f = fopen($file)) != NULL) {
+			// TODO add missing files to index file.
+		} else {
+			// TODO create new file with complete index.
+		}
 	}
 }
