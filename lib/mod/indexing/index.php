@@ -57,10 +57,10 @@ class index {
 					if (is_dir($root.DIR_SEP.$file)) {
 						if ($this->use_pattern && preg_match('#^'.$this->pattern[$this->level].'$#i', $file)) {
 							$this->level++;
-							$this->go_into($root.DIR_SEP.$file, $index);
+							$this->go_into($root.'/'.$file, $index);
 							$this->level--;
 						} elseif (!$this->use_pattern) {
-							$this->go_into($root.DIR_SEP.$file, $index);
+							$this->go_into($root.'/'.$file, $index);
 						}
 					} else {
 						foreach ($file_ext as $ext) {
@@ -69,10 +69,11 @@ class index {
 										&& preg_match('#^'.$this->pattern[$this->level].'\\'.$ext.'$#i', $file)) {
 									$file = basename($file, $ext);
 									if ($file != 'index')
-										$index[] = $root.DIR_SEP.$file;
+										$index[] = $root.'/'.$file;
 									break;
 								} elseif (!$this->use_pattern) {
-									$index[] = $root.DIR_SEP.$file;
+									$file = basename($file, $ext);
+									$index[] = $root.'/'.$file;
 									break;
 								}
 							}
@@ -87,22 +88,21 @@ class index {
 
 	private function make() {
 		$this->index = array();
-
-
 	}
 
 	/**
 	 * Prints all items in the index to a HTML list.
 	 */
-	function print_file_list() {
+	function print_rel_link_list() {
 		echo '<ul>'."\n";
 		if ($this->index == NULL)
 			$this->make_all();
 
-		foreach ($this->index as $entry) {
-			echo "\t".'<li><code>'.$entry.'</code></li>'."\n";
-		}
+		$len_root = strlen($this->root) + 1;
 
+		foreach ($this->index as $entry) {
+			echo "\t".'<li><code>'.substr($entry, $len_root).'</code></li>'."\n";
+		}
 		echo '</ul>'."\n\n";
 	}
 

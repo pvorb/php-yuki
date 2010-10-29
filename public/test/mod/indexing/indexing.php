@@ -11,10 +11,10 @@
 <h2>Contents of folder <code>/public</code></h2>
 <?php
 $index = new index(DIR_PUB, '');
-$index->print_file_list();
+$index->print_rel_link_list();
 ?>
 <h2>Contents of folder <code>/public</code> matched against a pattern</h2>
 <p>The pattern used is <code>test/mod/[[:alpha:]\-]+/[[:alpha:]\-]+</code></p>
 <?php
 $index = new index(DIR_PUB, 'test/mod/[[:alpha:]\-]+/[[:alpha:]\-]+');
-$index->print_file_list();
+$index->print_rel_link_list();
