@@ -17,11 +17,15 @@ $url = $_GET['url']; // request
 
 // Check for GET parameter 'file'
 if (isset($_GET['file'])) {
+	// Load necessary modules
+	load_modules($modules);
 	// Include file
 	get_file($url);
 }
 // Check for GET parameter 'dir'
 elseif (isset($_GET['dir'])) {
+	// Load necessary modules
+	load_modules($modules);
 	// Include dir
 	get_dir($url);
 }

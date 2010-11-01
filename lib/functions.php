@@ -4,7 +4,6 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.3.0
  * @package org.genitis.yuki
  */
 
@@ -55,4 +54,51 @@ function current_date() {
  */
 function current_time() {
 	return date(TIME_FORMAT);
+}
+
+/**
+ * Includes the contents of a requested file.
+ * @param string $url URL that was requested
+ */
+function get_file($url) {
+	$path = DIR_PUB.$url;
+
+	// If a file with one of the file extensions in $file_ext exists, include
+	// it.
+	global $file_ext;
+	foreach ($file_ext as $ext) {
+		if (file_exists($path.$ext)) {
+			include $path.$ext;
+			exit;
+		}
+	}
+
+	// If none was found, redirect to the 404 error page.
+	redirect(404, ERROR_404, $url);
+}
+
+/**
+ * Includes the contents of the index file of a requested
+ * @param unknown_type $url
+ */
+function get_dir($url) {
+	// Requested folder
+	$path = DIR_PUB.$url;
+
+	global $file_ext;
+	// If dir is empty, redirect to the root index.html file.
+	if (($url == '' || $url == '/') && file_exists(DIR_PUB.DEFAULT_FILE.$file_ext[0])) {
+		include DIR_PUB.DEFAULT_FILE.$file_ext[0];
+		exit;
+	}
+	// If folder exists, include its index.html.
+	elseif (file_exists($path)) {
+		foreach ($file_ext as $ext) {
+			if (file_exists($path.DEFAULT_FILE.$ext)) {
+				include $path.DEFAULT_FILE.$ext;
+				exit;
+			}
+		}
+	}
+	redirect(404, ERROR_404, $url);
 }

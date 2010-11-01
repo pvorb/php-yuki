@@ -5,6 +5,7 @@
  * The following definitions are needed:
  * DOMAIN		URL to the domain of the site. Errors will redirect to
  * 				‘DOMAIN/ERROR_404?s=…’.
+ * DEFAULT_FILE	default file in a directory that is included.
  * ERROR_404	path to the 404 error page
  * ENDL			character(s) that will be used when inserting a line break.
  * INDENT		character(s) that will be used for indentation.
@@ -12,7 +13,7 @@
  * The following variables are needed:
  * $file_ext                    array of strings with all file extensions that
  *                              will be looked for.
- * $mod_inc                     array of strings with all file names that shall
+ * $modules                     array of strings with all file names that shall
  *                              be included relative to the 'lib/mod' folder.
  *
  * @author Paul Vorbach <vorbach@genitis.org>
@@ -21,9 +22,12 @@
  */
 define('DIR_LIB', dirname(__FILE__).DIR_SEP); // Don’t change!
 
+// -----------------
 // User definitions:
+// -----------------
 define('DOMAIN', 'http://localhost');
 
+define('DEFAULT_FILE', 'index');
 define('ERROR_404', 'error/404');
 define('ENDL', "\n");
 define('INDENT', "\t");
@@ -33,7 +37,7 @@ $file_ext = array(
 	'.php'
 );
 
-$mod_inc = array(
+$modules = array(
 	'user-input/user-input.php',
 	'comment/comment.php',
 	'indexing/index.php'
