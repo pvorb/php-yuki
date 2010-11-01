@@ -2,45 +2,41 @@
 /**
  * Configuration file.
  *
- * The following definitions are possible:
- * ERROR_PAGE_404               path to the 404 error page
- * USES_MULTIPLE_LANGUAGES      TRUE if HTML/PHP files shall be available in
- *                              multiple languages. (for example 'index.en.html'
- *                              and 'index.de.html'
- * DEFAULT_LANG                 any language string (for example 'en')
+ * The following definitions are needed:
+ * DOMAIN		URL to the domain of the site. Errors will redirect to
+ * 				‘DOMAIN/ERROR_404?s=…’.
+ * ERROR_404	path to the 404 error page
+ * ENDL			character(s) that will be used when inserting a line break.
+ * INDENT		character(s) that will be used for indentation.
  *
- * The following variables are possible:
+ * The following variables are needed:
  * $file_ext                    array of strings with all file extensions that
- *                              will be looked up
- * $modules                     array of strings with all file names that shall
+ *                              will be looked for.
+ * $mod_inc                     array of strings with all file names that shall
  *                              be included relative to the 'lib/mod' folder.
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.3
  * @package org.genitis.yuki
  */
+define('DIR_LIB', dirname(__FILE__).DIR_SEP); // Don’t change!
 
-// Define important directories.
-define('DIR_LIB', dirname(__FILE__));
-define('DIR_MOD', DIR_LIB.DIRECTORY_SEPARATOR.'mod');
+// User definitions:
+define('DOMAIN', 'http://localhost');
 
-define('DIR_SEP', DIRECTORY_SEPARATOR);
-
-define('ERROR_PAGE_404', 'error/404/');
-define('USES_MULTIPLE_LANGUAGES', FALSE);
-define('DEFAULT_LANG', 'en');
-
-define('DATE_FORMAT', 'M d, Y');
-define('TIME_FORMAT', 'g:m a');
+define('ERROR_404', 'error/404');
+define('ENDL', "\n");
+define('INDENT', "\t");
 
 $file_ext = array(
 	'.html',
 	'.php'
 );
 
-$modules = array(
+$mod_inc = array(
 	'user-input/user-input.php',
 	'comment/comment.php',
 	'indexing/index.php'
 );
+
+require_once 'functions.php';
