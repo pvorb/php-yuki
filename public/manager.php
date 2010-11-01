@@ -38,5 +38,5 @@ elseif (isset($_GET['err'])) {
 		redirect(301, $redirections[$url]);
 	// Otherwise redirect to a 404 error.
 	else
-		redirect(404, ERROR_PAGE_404, $url);
+		redirect(404, ERROR_404, $url);
 }
