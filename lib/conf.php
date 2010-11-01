@@ -9,6 +9,8 @@
  * ERROR_404	path to the 404 error page
  * ENDL			character(s) that will be used when inserting a line break.
  * INDENT		character(s) that will be used for indentation.
+ * DATE_FORMAT	default date format used by function date.
+ * TIME_FORMAT	default time format used by function date.
  *
  * The following variables are needed:
  * $file_ext                    array of strings with all file extensions that
@@ -31,6 +33,9 @@ define('DEFAULT_FILE', 'index');
 define('ERROR_404', 'error/404');
 define('ENDL', "\n");
 define('INDENT', "\t");
+
+define('DATE_FORMAT', 'M d, Y');
+define('TIME_FORMAT', 'g:m a');
 
 $file_ext = array(
 	'.html',
