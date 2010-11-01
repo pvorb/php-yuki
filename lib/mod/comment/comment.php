@@ -55,12 +55,12 @@ class comment {
 	 * This method may be used by any html file to show the already posted comments.
 	 */
 	function print_list() {
-		global $is_index, $index, $content;
+		global $url;
 
-		if ($is_index)
-			include DIR_PUB.'/'.$index.'.comments';
+		if (isset($_GET['dir']))
+			include DIR_PUB.$url.DEFAULT_FILE.'.comments';
 		else
-			include DIR_PUB.'/'.$content.'.comments';
+			include DIR_PUB.$url.'.comments';
 
 		// Comment saving and inclusion logic
 		if ($this->mode == COMMENT_MODE_PREVIEW) {
