@@ -27,8 +27,6 @@ define('DIR_LIB', dirname(__FILE__).DIR_SEP); // Don’t change!
 // -----------------
 // User definitions:
 // -----------------
-define('DOMAIN', 'http://localhost');
-
 define('DEFAULT_FILE', 'index');
 define('ERROR_404', 'error/404');
 define('ENDL', "\n");

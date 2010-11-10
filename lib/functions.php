@@ -25,7 +25,9 @@ function redirect($type, $location, $search = FALSE) {
 		case 307: header('HTTP/1.1 307 Temporary Redirect'); break;
 		case 404: header('HTTP/1.1 404 Not Found'); break;
 	}
-	header('Location: '.DOMAIN.'/'.$location.($search != FALSE ? '?s='.trim(strtr($search, array('/' => '+', '%20' => '+')), '+') : ''));
+	// Determine the protocol, domain and (optionally) port of the server.
+	$server = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].((isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != 80) ? ':'.$_SERVER['SERVER_PORT'] : NULL);
+	header('Location: '.$server.'/'.$location.($search != FALSE ? '?s='.trim(strtr($search, array('/' => '+', '%20' => '+')), '+') : ''));
 	exit;
 }
 
