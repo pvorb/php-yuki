@@ -4,12 +4,17 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
  * @package org.genitis.yuki.mod.user-input.test
  */
 ?>
-<h1>Tests for function <code>validate_protocol()</code></h1>
-<p>Checks for each URL, whether it has got a protocol given.</p>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tests for function validate_protocol()</title>
+	</head>
+	<body>
+		<h1>Tests for function <code>validate_protocol()</code></h1>
+		<p>Checks for each URL, whether it has got a protocol given.</p>
 <?php
 $urls = array(
 	// true ones
@@ -31,3 +36,6 @@ $urls = array(
 foreach ($urls as $url) {
 	echo $url.', '.(validate_protocol($url) ? 'true' : 'false')."<br/>\n";
 }
+?>
+	</body>
+</html>

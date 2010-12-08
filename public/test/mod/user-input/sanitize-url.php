@@ -4,11 +4,16 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
  * @package org.genitis.yuki.mod.user-input.test
  */
 ?>
-<h1>Tests for function <code>sanitize_url()</code></h1>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tests for function</title>
+	</head>
+	<body>
+		<h1>Tests for function <code>sanitize_url()</code></h1>
 <?php
 $urls = array(
 	// true ones
@@ -30,3 +35,6 @@ $urls = array(
 foreach ($urls as $url) {
 	echo $url.', '.sanitize_url($url)."<br/>\n";
 }
+?>
+	</body>
+</html>

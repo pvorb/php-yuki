@@ -4,11 +4,16 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.2.0
  * @package org.genitis.yuki.mod.user-input.test
  */
 ?>
-<h1>Tests for function <code>validate_email().</code></h1>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tests for function validate_email()</title>
+	</head>
+	<body>
+		<h1>Tests for function <code>validate_email().</code></h1>
 <?php
 $emails = array(
 	'name@domain.com',
@@ -24,3 +29,6 @@ foreach ($emails as $email) {
 	echo validate_email($email) == FALSE ? '<strong>error</strong>: '.$email : 'OK: '.$email;
 	echo "<br />\n";
 }
+?>
+	</body>
+</html>

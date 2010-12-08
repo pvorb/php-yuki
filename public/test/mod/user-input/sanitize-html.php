@@ -4,12 +4,17 @@
  *
  * @author Paul Vorbach <vorbach@genitis.org>
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 0.2.0
  * @package org.genitis.yuki.mod.user-input.test
  */
 ?>
-<h1>Tests for function <code>sanitize_html()</code></h1>
-<h2>Nice input</h2>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tests for function sanitize_html()</title>
+	</head>
+	<body>
+		<h1>Tests for function <code>sanitize_html()</code></h1>
+		<h2>Nice input</h2>
 <?php
 $html = <<<EOT
 This is a small comment.
@@ -61,7 +66,7 @@ $html = '
 
 echo sanitize_html($html)."\n\n";
 ?>
-<h2>XSS input</h2>
+		<h2>XSS input</h2>
 <?php
 $html = <<<EOT
 <a onload=alert('XSS')></a>
@@ -107,3 +112,6 @@ tt	p://6&#9;6.000146.0x7.147/">XSS</A>
 EOT;
 
 echo sanitize_html($html)."\n\n";
+?>
+	</body>
+</html>

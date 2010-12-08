@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Error 404<?php if (isset($_GET['s'])) echo ': '.$_GET['s']; ?></title>
