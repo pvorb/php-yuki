@@ -13,7 +13,7 @@ define('DIR_PUB', dirname(__FILE__).DIR_SEP);
 // Requires conf.php
 require '../lib/conf.php';
 
-// Exit if $_GET['url'] is not set
+// Exit, if GET parameter 'url' is not set
 if (!isset($_GET['url']))
 	exit;
 
