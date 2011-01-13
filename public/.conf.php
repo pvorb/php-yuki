@@ -23,12 +23,6 @@
  * @package org.genitis.yuki
  */
 
-// define DIR_LIB
-$dir = explode(DIR_SEP, dirname(__FILE__));
-$dir[sizeof($dir) - 1] = '';
-$dir = implode($dir, DIR_SEP).'lib'.DIR_SEP;
-define('DIR_LIB', $dir);
-
 // -----------------
 // User definitions:
 // -----------------
@@ -50,3 +44,10 @@ $modules = array(
 	'comment/comment.php',
 	'index/index.php'
 );
+
+// define DIR_LIB
+$dir = explode(DIR_SEP, dirname(__FILE__));
+$dir[sizeof($dir) - 1] = '';
+$dir = implode($dir, DIR_SEP).'lib'.DIR_SEP;
+define('DIR_LIB', $dir);
+
