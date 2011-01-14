@@ -45,9 +45,14 @@ $modules = array(
 	'index/index.php'
 );
 
-// define DIR_LIB
+// ---------------------
+// Standard definitions:
+// ---------------------
+define('DIR_SEP', DIRECTORY_SEPARATOR);
+define('DIR_PUB', dirname(__FILE__).DIR_SEP);
+
 $dir = explode(DIR_SEP, dirname(__FILE__));
 $dir[sizeof($dir) - 1] = '';
 $dir = implode($dir, DIR_SEP).'lib'.DIR_SEP;
 define('DIR_LIB', $dir);
-
+define('DIR_MOD', DIR_LIB.'mod'.DIR_SEP);

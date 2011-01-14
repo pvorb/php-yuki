@@ -7,11 +7,8 @@
  * @package org.genitis.yuki
  */
 
-define('DIR_SEP', DIRECTORY_SEPARATOR);
-define('DIR_PUB', dirname(__FILE__).DIR_SEP);
-
 // Requires conf.php
-require DIR_PUB.'.conf.php';
+require 'conf.php';
 require DIR_LIB.'functions.php';
 
 // Exit, if GET parameter 'url' is not set
@@ -36,7 +33,7 @@ elseif (isset($_GET['dir'])) {
 }
 // Check for GET parameter 'err'
 elseif (isset($_GET['err'])) {
-	require_once DIR_PUB.'.redirect.php';
+	require 'redirect.php';
 
 	// If a redirection for $url is defined, make a redirect as defined.
 	if (isset($redirections[$url]))
