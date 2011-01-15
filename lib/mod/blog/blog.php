@@ -77,11 +77,13 @@ class blog {
 			// Read file line by line
 			while (($line = fgets($file)) !== FALSE) {
 				// If a content_element tag with id content_id is reached.
-				if (preg_match('#<'.$this->content_element.' [^<>]*id=("|\')'.$this->content_id.'("|\')[^<>]*>#', $line)) {
+				if (preg_match('#<'.$this->content_element.' [^<>]*id=["|\']'.$this->content_id.'["|\'][^<>]*>#', $line)) {
 					$tags_open++;
 
 					// Continue reading lines.
 					while ($line = fgets($file)) {
+						// TODO Add link to full article.
+
 						// Make lowercase
 						$lower_line = strtolower($line);
 
@@ -91,8 +93,20 @@ class blog {
 						// Count closing tags </content_element> and subtract from $tags_open.
 						$tags_open -= substr_count($lower_line, '</'.$this->content_element);
 
+						// Add link to full article to title element.
+						if (preg_match('#<'.$this->title_element.($this->title_id ? ' [^<>]*id=["\']'.$this->title_id.'["|\'][^<>]*>#' : '>#'), $line, $match)) {
+							$line = str_replace($match[0], $match[0].'<a href="'.$entry.'">', $line);
+							do {
+								$lower_line = strtolower($line);
+								if (strpos($lower_line, '</'.$this->title_element)) {
+									$line = str_ireplace('</'.$this->title_element, '</a></'.$this->title_element, $line);
+									break;
+								}
+							} while ($line = fgets($file));
+						}
+
 						// Look for comments if comment hiding is enabled.
-						if ($this->hide_comments && preg_match('#<'.$this->comment_element.' [^<>]*id=("|\')'.$this->comment_id.'("|\')[^<>]*>#', $line)) {
+						if ($this->hide_comments && preg_match('#<'.$this->comment_element.' [^<>]*id=["|\']'.$this->comment_id.'["|\'][^<>]*>#', $line)) {
 							$hidden_tags++;
 
 							// Continue reading lines.
