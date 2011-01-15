@@ -22,7 +22,6 @@
  * @license http://opensource.org/licenses/mit-license.php MIT License
  * @package org.genitis.yuki
  */
-define('DIR_LIB', dirname(__FILE__).DIR_SEP); // Don’t change!
 
 // -----------------
 // User definitions:
@@ -46,4 +45,9 @@ $modules = array(
 	'index/index.php'
 );
 
-require_once 'functions.php';
+// define DIR_LIB
+$dir = explode(DIR_SEP, dirname(__FILE__));
+$dir[sizeof($dir) - 1] = '';
+$dir = implode($dir, DIR_SEP).'lib'.DIR_SEP;
+define('DIR_LIB', $dir);
+
