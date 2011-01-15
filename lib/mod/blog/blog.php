@@ -28,6 +28,8 @@ class blog {
 		$this->dir = $dir;
 		$this->index_file = $index_file;
 
+		// FIXME Strings without a '#' don't work.
+
 		// Split $content into element and id.
 		$content = explode('#', $content);
 		$this->content_element = $content[0];
@@ -44,16 +46,9 @@ class blog {
 		$this->title_id = $title[1];
 
 		$this->hide_comments = $hide_comments;
-
-//		echo $this->content_element.'<br>';
-//		echo $this->content_id.'<br>';
-//		echo $this->comment_element.'<br>';
-//		echo $this->comment_id.'<br>';
-//		echo $this->title_element.'<br>';
-//		echo $this->title_id.'<br>';
 	}
 
-	function write($atom = false) {
+	function print_index($atom = false) {
 		// Open index file
 		if ($file = fopen($this->index_file, 'r')) {
 			$i = 1;
