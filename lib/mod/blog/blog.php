@@ -76,13 +76,15 @@ class blog {
 			$hidden_tags = 0;
 			// Read file line by line
 			while (($line = fgets($file)) !== FALSE) {
+				// Fix the references
+				self::fix_refs($line, $entry);
+
 				// If a content_element tag with id content_id is reached.
 				if (preg_match('#<'.$this->content_element.' [^<>]*id=["|\']'.$this->content_id.'["|\'][^<>]*>#', $line)) {
 					$tags_open++;
 
 					// Continue reading lines.
 					while ($line = fgets($file)) {
-						// TODO Add link to full article.
 
 						// Make lowercase
 						$lower_line = strtolower($line);
@@ -93,58 +95,85 @@ class blog {
 						// Count closing tags </content_element> and subtract from $tags_open.
 						$tags_open -= substr_count($lower_line, '</'.$this->content_element);
 
-						// Add link to full article to title element.
-						if (preg_match('#<'.$this->title_element.($this->title_id ? ' [^<>]*id=["\']'.$this->title_id.'["|\'][^<>]*>#' : '>#'), $line, $match)) {
-							$line = str_replace($match[0], $match[0].'<a href="'.$entry.'">', $line);
-							do {
-								$lower_line = strtolower($line);
-								if (strpos($lower_line, '</'.$this->title_element)) {
-									$line = str_ireplace('</'.$this->title_element, '</a></'.$this->title_element, $line);
-									break;
-								}
-							} while ($line = fgets($file));
-						}
+						// Add a permalink to the title of the entry
+						self::add_permalink($file, $line, $entry, $this->title_element, $this->title_id);
 
 						// Look for comments if comment hiding is enabled.
-						if ($this->hide_comments && preg_match('#<'.$this->comment_element.' [^<>]*id=["|\']'.$this->comment_id.'["|\'][^<>]*>#', $line)) {
-							$hidden_tags++;
+						if ($this->hide_comments) {
+							self::hide_comments($file, $line, $entry, $hidden_tags, $this->comment_element, $this->comment_id);
+						}
 
-							// Continue reading lines.
-							while ($line = fgets($file)) {
-								// Make lowercase
-								$lower_line = strtolower($line);
-
-								// Count opening tags <comment_element> and add to $hidden_tags.
-								$hidden_tags += substr_count($lower_line, '<'.$this->comment_element);
-
-								// Count closing tags </comment_element> and subtract from $hidden_tags.
-								$hidden_tags -= substr_count($lower_line, '</'.$this->comment_element);
-
-								// If $hidden_tags <= 0, get the next line and break the loop.
-								if ($hidden_tags <= 0) {
-									break;
-								}
-							}
-						} else {
-							// If $tags_open == 0, break the loop.
-							if ($tags_open == 0) {
-								break;
-							}
-							// If $tags_open < 0, echo missing closing tags and break the loop.
-							elseif ($tags_open < 0) {
-								echo str_repeat('</'.$this->comment_element.'>', -$hidden_tags);
-								break;
-							}
-							// Else echo the $line.
-							else {
-								echo $line;
-							}
+						// If $tags_open == 0, break the loop.
+						if ($tags_open == 0) {
+							break;
+						}
+						// If $tags_open < 0, echo missing closing tags and break the loop.
+						elseif ($tags_open < 0) {
+							echo str_repeat('</'.$this->comment_element.'>', -$hidden_tags);
+							break;
+						}
+						// Otherwise print the $line.
+						else {
+							echo $line;
 						}
 					}
 					break;
 				}
 			}
 			fclose($file);
+		}
+	}
+
+	private static function fix_refs(&$html, $entry) {
+		// fix links and references
+
+		// Match links (either href="..." or src="...") and correctly replace them.
+		if (strpos($html, 'href="') !== FALSE && strpos($html, '://') === FALSE) {
+			$html = str_replace('href="', 'href="'.dirname($entry).'/', $html);
+		}
+		if (strpos($html, 'src="') !== FALSE && strpos($html, '://') === FALSE) {
+			$html = str_replace('src="', 'src="'.dirname($entry).'/', $html);
+		}
+	}
+
+	private static function add_permalink(&$file, &$line, $entry, $title_element, $title_id) {
+		// If the line contains the title, add permalink.
+		if (preg_match('#<'.$title_element.($title_id ? ' [^<>]*id=["\']'.$title_id.'["|\'][^<>]*>#' : '>#'), $line, $match)) {
+			$line = str_replace($match[0], $match[0].'<a href="'.$entry.'">', $line);
+			$lower_line = strtolower($line);
+
+			// Close tags
+			do {
+				if (strpos($lower_line, '</'.$title_element) !== FALSE) {
+					$line = str_ireplace('</'.$title_element, '</a></'.$title_element, $line);
+					return;
+				} else {
+					echo $line;
+				}
+			} while ($line = fgets($file));
+		}
+	}
+
+	private  static function hide_comments(&$file, &$line, $entry, &$hidden_tags, $comment_element, $comment_id) {
+		if (preg_match('#<'.$comment_element.' [^<>]*id=["|\']'.$comment_id.'["|\'][^<>]*>#', $line)) {
+			$hidden_tags++;
+
+			// Continue reading lines.
+			while ($line = fgets($file)) {
+				// Make lowercase
+				$lower_line = strtolower($line);
+
+				// Count opening tags <comment_element> and add to $hidden_tags.
+				$hidden_tags += substr_count($lower_line, '<'.$comment_element);
+
+				// Count closing tags </comment_element> and subtract from $hidden_tags.
+				$hidden_tags -= substr_count($lower_line, '</'.$comment_element);
+
+				// If $hidden_tags <= 0, get the next line and break the loop.
+				if ($hidden_tags <= 0) {
+					return;
+				}
+			}
 		}
 	}
 
