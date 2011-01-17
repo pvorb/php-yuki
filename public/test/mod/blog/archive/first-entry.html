@@ -8,12 +8,11 @@
 		<h1>First blog entry</h1>
 		<p>This is the first blog entry. <a href="../../../../">Back to the roots!</a></p>
 		<div id="comments">
-			<h2>Comments</h2>
-			<ul>
-				<li>
-					<p>First comment</p>
-				</li>
-			</ul>
+<?php
+$c = new comment();
+$c->print_list();
+$c->print_form()
+?>
 		</div>
 	</body>
 </html>
