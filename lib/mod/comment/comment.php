@@ -54,42 +54,43 @@ class comment {
 	 * This method may be used by any html file to show the already posted comments.
 	 */
 	function print_list() {
-		global $url;
-
 		if (isset($_GET['dir'])) {
-			$file = DIR_PUB.str_replace('/', DIR_SEP, $url).DEFAULT_FILE.'.comments';
+			$file = DIR_PUB.str_replace('/', DIR_SEP, $_GET['url']).DEFAULT_FILE.'.comments';
+
 			if (file_exists($file))
 				include $file;
 			else {
-				$file = fopen($file, 'w');
-				fclose($file);
+				$f = fopen($file, 'ab');
+				fclose($f);
 			}
 		} else {
-			$file = DIR_PUB.str_replace('/', DIR_SEP, $url).'.comments';
+			$file = DIR_PUB.str_replace('/', DIR_SEP, $_GET['url']).'.comments';
 			if (file_exists($file))
 				include $file;
 			else {
-				$file = fopen($file, 'w');
-				fclose($file);
+				$f = fopen($file, 'ab');
+				fclose($f);
 			}
 		}
 
 		// Comment saving and inclusion logic
 		if ($this->mode == COMMENT_MODE_PREVIEW) {
 			// If a preview is requested, show it.
-			$this->validate();
 			$this->sanitize();
-			include 'comment_preview.tpl';
-		} elseif ($this->mode == COMMENT_MODE_SAVE) {
-			// If a save is requested, check validity of the comment.
 			$this->validate();
+			include 'comment_preview.tpl';
+		}
+		// If a save is requested, check validity of the comment.
+		elseif ($this->mode == COMMENT_MODE_SAVE) {
+			$this->sanitize();
+			$this->validate();
+			// Save, if it is valid and show the new comment.
 			if ($this->is_valid) {
-				// Save, if it is valid and show the new comment.
 				$this->save();
 				include 'comment_new.tpl';
-			} else {
-				// Do not save it, if it is not valid and show the preview.
-				$this->sanitize();
+			}
+			// Do not save it, if it is not valid and show the preview.
+			else {
 				include 'comment_preview.tpl';
 			}
 		}
@@ -111,12 +112,14 @@ class comment {
 		$this->errors = array();
 
 		// Validate values.
-		if (!validate_name($this->user))
-			$this->errors['name'] = TRUE;
+		if (preg_match('#^[[:space:]]*$#', $this->message))
+			$this->errors['message'] = 'message';
+		if (!validate_name($this->name))
+			$this->errors['name'] = 'name';
 		if (!validate_url($this->website))
-			$this->errors['website'] = TRUE;
+			$this->errors['website'] = 'website';
 		if (!validate_email($this->email))
-			$this->errors['email'] = TRUE;
+			$this->errors['email'] = 'email';
 
 		if (count($this->errors) == 0)
 			$this->is_valid = TRUE;
@@ -127,8 +130,6 @@ class comment {
 	 * Sanitizes a comment.
 	 */
 	private function sanitize() {
-		global $is_index, $index, $content;
-
 		// Sanitize user input
 		$this->message = sanitize_html($_POST['comment-message']);
 		$this->name    = sanitize_string($_POST['comment-name']);
@@ -144,12 +145,8 @@ class comment {
 	 * Writes a new comment to the comments file of the article.
 	 */
 	private function save() {
-		global $is_index, $index, $content;
-
-		$this->sanitize();
-
 		// Get contents of template
-		$comment = file_get_contents(dirname(__FILE__).'/comment.tpl');
+		$comment = file_get_contents(dirname(__FILE__).DIR_SEP.'comment.tpl');
 		// Replace patterns with values
 		$comment = str_replace('{{{comment_message}}}', $this->message, $comment);
 		$comment = str_replace('{{{comment_by}}}', $this->website
@@ -159,10 +156,12 @@ class comment {
 		$comment = str_replace('{{{comment_time}}}', $this->time, $comment);
 
 		// Open comments file for writing
-		if ($is_index)
-			$f = fopen($index.'.comments', 'ab');
-		else
-			$f = fopen($content.'.comments', 'ab');
+		// If this is a directory, open DEFAULT_FILE.comments
+		if (isset($_GET['dir']))
+			$f = fopen(DIR_PUB.str_replace('/', DIR_SEP, $_GET['url']).DEFAULT_FILE.'.comments', 'ab');
+		// Otherwise open
+		elseif (isset($_GET['file']))
+			$f = fopen(DIR_PUB.str_replace('/', DIR_SEP, $_GET['url']).'.comments', 'ab');
 
 		// Write $comment to the end of the file
 		fwrite($f, $comment);
