@@ -6,5 +6,5 @@
 		Comment by <?php if ($this->website) echo '<a href="'.$this->website.'">'.$this->name.'</a>'; ?> on <?php echo $this->date; ?> at <?php echo $this->time; ?>.
 	</div>
 
-	<p><strong>Your comment has been saved.</strong></p>
+	<p><strong class="success">Your comment has been saved.</strong></p>
 </div>

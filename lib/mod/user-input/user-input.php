@@ -10,8 +10,8 @@
 define('PREG_IP', '#(\d{0,3}\.){3}\d{0,3}#i');
 define('PREG_PROTOCOL', '#^([[:alpha:]]+://|mailto:)#i');
 define('PREG_NAME', '#^[^[:cntrl:]<>]+$#');
-define('PREG_EMAIL', '#^[[:alnum:]äöü][[:alnum:]._\-äöü]*@([[:alnum:]äöü\-]+\.)+[[:alpha:]]+$#i');
-define('PREG_URL', '#((http(s)?:)?//)?([[:alnum:]äöü\-]\.)+[[:alpha:]]+[^[:cntrl:]<>]*$#i');
+define('PREG_EMAIL', '#^[[:alnum:]\\.!\#\%&\'*+-/=?\^_`{|}\~" ]+@([[:alnum:]äöü\-]+\.)+[[:alpha:]]+$#i'); // not very strict
+define('PREG_URL', '#^(((https?:)?//)?([[:alnum:]äöü\-].)+[[:alpha:]]+(/[^[:cntrl:]<>]*)?)?$#i');
 
 /**
  * Matches strings that begin with a protocol.
@@ -64,6 +64,10 @@ function sanitize_string(&$string) {
  * @return string
  */
 function sanitize_url(&$url) {
+	if (preg_match('#^[[:space:]]*$#', $url)) {
+		return '';
+	}
+
 	// if there’s no protocol given
 	if (!validate_protocol($url)) {
 		// if it’s an email adress
