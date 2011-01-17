@@ -56,10 +56,23 @@ class comment {
 	function print_list() {
 		global $url;
 
-		if (isset($_GET['dir']))
-			include DIR_PUB.$url.DEFAULT_FILE.'.comments';
-		else
-			include DIR_PUB.$url.'.comments';
+		if (isset($_GET['dir'])) {
+			$file = DIR_PUB.str_replace('/', DIR_SEP, $url).DEFAULT_FILE.'.comments';
+			if (file_exists($file))
+				include $file;
+			else {
+				$file = fopen($file, 'w');
+				fclose($file);
+			}
+		} else {
+			$file = DIR_PUB.str_replace('/', DIR_SEP, $url).'.comments';
+			if (file_exists($file))
+				include $file;
+			else {
+				$file = fopen($file, 'w');
+				fclose($file);
+			}
+		}
 
 		// Comment saving and inclusion logic
 		if ($this->mode == COMMENT_MODE_PREVIEW) {
