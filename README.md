@@ -2,6 +2,8 @@
 
 Yuki is a *very simple* Content Management system. Its intention is to provide basic access to HTML-files on an Apache Web Server running with PHP. You don't need a database to get started, but there will be extensions that provide database access.
 
+Development of this project has been discontinued. Expect things to break.
+
 ## Getting started
 All you need is an *Apache HTTP Server* with a *PHP* installation and the Apache module *mod_rewrite*.
 
